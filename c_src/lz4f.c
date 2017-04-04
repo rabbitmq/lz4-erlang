@@ -237,15 +237,52 @@ NIF_FUNCTION(lz4f_get_frame_info)
 
 NIF_FUNCTION(lz4f_decompress)
 {
+    void* dctx_res;
+    ERL_NIF_TERM head;
+    size_t dstSize, srcRead, srcSize;
+    ErlNifBinary srcBin, dstBin;
 
-// So apparently we need to call this repeatedly until there is
-// no input remaining. This means we need to create an iolist(),
-// or more specifically a list of binary().
+    BADARG_IF(!enif_get_resource(env, argv[0], res_LZ4F_dctx, &dctx_res));
+    BADARG_IF(!enif_inspect_binary(env, argv[1], &srcBin));
 
-//<pre><b>size_t LZ4F_decompress(LZ4F_dctx* dctx,
-//                                   void* dstBuffer, size_t* dstSizePtr,
-//                                   const void* srcBuffer, size_t* srcSizePtr,
-//                                   const LZ4F_decompressOptions_t* dOptPtr);
+    srcRead = 0;
+    srcSize = srcBin.size;
 
-    return atom_ok;
+    head = enif_make_list(env, 0);
+
+    while (srcSize) {
+        dstSize = 65536; // Arbitrary maximum size of chunk.
+
+        if (!enif_alloc_binary(dstSize, &dstBin)) {
+            // @todo Free what was allocated.
+            // @todo Better error.
+            return enif_make_badarg(env);
+        }
+
+        LZ4F_decompress(NIF_RES_GET(LZ4F_dctx, dctx_res),
+            dstBin.data, &dstSize,
+            srcBin.data + srcRead, &srcSize,
+            NULL);
+
+        if (LZ4F_isError(dstSize)) {
+            // @todo Releease everything.
+            enif_release_binary(&dstBin);
+            // @todo Better error.
+            return enif_make_badarg(env);
+        }
+
+        if (!enif_realloc_binary(&dstBin, dstSize)) {
+            // @todo Releease everything.
+            enif_release_binary(&dstBin);
+            // @todo Better error.
+            return enif_make_badarg(env);
+        }
+
+        head = enif_make_list_cell(env, enif_make_binary(env, &dstBin), head);
+
+        srcRead += srcSize;
+        srcSize = srcBin.size - srcRead;
+    }
+
+    return head;
 }

@@ -11,3 +11,10 @@ include erlang.mk
 
 CFLAGS += -I $(DEPS_DIR)/lz4_src/lib
 LDLIBS += -L $(DEPS_DIR)/lz4_src/lib -llz4
+
+cppcheck:
+	cppcheck -f --quiet --error-exitcode=2 --enable=all --inconclusive --std=posix -I/usr/include/SDL2 c_src/
+
+scan-build:
+	make clean
+	scan-build make

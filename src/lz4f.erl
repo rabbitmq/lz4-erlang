@@ -81,8 +81,6 @@ create_decompression_context() ->
 get_frame_info(Dctx, Data) ->
     lz4_nif:lz4f_get_frame_info(Dctx, Data).
 
--spec decompress(dctx(), binary())
-    -> {ok, iolist(), non_neg_integer()}
-    | {done, iolist()}.
+-spec decompress(dctx(), binary()) -> iolist().
 decompress(Dctx, Data) ->
     lz4_nif:lz4f_decompress(Dctx, Data).
