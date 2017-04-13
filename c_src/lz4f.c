@@ -238,7 +238,7 @@ NIF_FUNCTION(lz4f_get_frame_info)
 NIF_FUNCTION(lz4f_decompress)
 {
     void* dctx_res;
-    ERL_NIF_TERM head;
+    ERL_NIF_TERM head, reversed;
     size_t dstSize, srcRead, srcSize;
     ErlNifBinary srcBin, dstBin;
 
@@ -284,5 +284,9 @@ NIF_FUNCTION(lz4f_decompress)
         srcSize = srcBin.size - srcRead;
     }
 
-    return head;
+    // We don't check the return value because no error can occur
+    // according to the function's source code.
+    enif_make_reverse_list(env, head, &reversed);
+
+    return reversed;
 }

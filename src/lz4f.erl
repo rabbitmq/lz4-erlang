@@ -15,6 +15,7 @@
 %% Decompression.
 -export([create_decompression_context/0]).
 -export([get_frame_info/2]).
+-export([decompress/1]).
 -export([decompress/2]).
 
 -type block_size_id() :: default | max64KB | max256KB | max1MB | max4MB.
@@ -80,6 +81,10 @@ create_decompression_context() ->
 -spec get_frame_info(dctx(), binary()) -> {ok, frame_info(), non_neg_integer()}.
 get_frame_info(Dctx, Data) ->
     lz4_nif:lz4f_get_frame_info(Dctx, Data).
+
+-spec decompress(binary()) -> iolist().
+decompress(Data) ->
+    decompress(create_decompression_context(), Data).
 
 -spec decompress(dctx(), binary()) -> iolist().
 decompress(Dctx, Data) ->

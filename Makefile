@@ -7,6 +7,9 @@ dep_lz4_src = git https://github.com/lz4/lz4 v1.7.5
 
 C_SRC_OUTPUT = $(CURDIR)/priv/lz4_nif
 
+TEST_DEPS = ct_helper
+dep_ct_helper = git https://github.com/extend/ct_helper master
+
 include erlang.mk
 
 CFLAGS += -I $(DEPS_DIR)/lz4_src/lib
@@ -18,3 +21,13 @@ cppcheck:
 scan-build:
 	make clean
 	scan-build make
+
+# Download a large file for use in compression tests.
+
+PDF_REFERENCE = http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf
+
+test-build:: $(TEST_DIR)/lz4f_SUITE_data/pdf_reference_1-7.pdf
+
+$(TEST_DIR)/lz4f_SUITE_data/pdf_reference_1-7.pdf:
+	$(verbose) mkdir -p $(TEST_DIR)/lz4f_SUITE_data/
+	$(gen_verbose) $(call core_http_get,$@,$(PDF_REFERENCE))
