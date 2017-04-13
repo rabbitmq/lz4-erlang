@@ -1,0 +1,10 @@
+.erlang.mk/
+c_src/env.mk
+c_src/*.o
+deps/
+ebin/
+logs/
+lz4.d
+priv/
+test/*.beam
+test/lz4f_SUITE_data/
