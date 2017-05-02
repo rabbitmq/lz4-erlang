@@ -2,8 +2,10 @@ PROJECT = lz4
 PROJECT_DESCRIPTION = New project
 PROJECT_VERSION = 0.1.0
 
-BUILD_DEPS = lz4_src
+BUILD_DEPS = lz4_src nif_helpers
 dep_lz4_src = git https://github.com/lz4/lz4 v1.7.5
+dep_nif_helpers = git https://github.com/ninenines/nif_helpers master
+DEP_PLUGINS = nif_helpers
 
 C_SRC_OUTPUT = $(CURDIR)/priv/lz4_nif
 
@@ -15,8 +17,11 @@ include erlang.mk
 CFLAGS += -I $(DEPS_DIR)/lz4_src/lib
 LDLIBS += -L $(DEPS_DIR)/lz4_src/lib -llz4
 
+-include c_src/env.mk
+
 cppcheck:
-	cppcheck -f --quiet --error-exitcode=2 --enable=all --inconclusive --std=posix -I/usr/include/SDL2 c_src/
+	cppcheck -f --quiet --error-exitcode=2 --enable=all --inconclusive --std=posix \
+        -Ideps/lz4_src/lib/ -Ideps/nif_helpers/ -I$(ERTS_INCLUDE_DIR) c_src/
 
 scan-build:
 	make clean
