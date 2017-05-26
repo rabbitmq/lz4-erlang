@@ -1,11 +1,16 @@
+.concrete/DEV_MODE
 .erlang.mk/
+.eunit/
 .lz4.plt
+.rebar/
 c_src/env.mk
 c_src/*.o
 deps/
 ebin/
+erl_crash.dump
 logs/
 lz4.d
 priv/
+rel/example_project
 test/*.beam
 test/lz4f_SUITE_data/
