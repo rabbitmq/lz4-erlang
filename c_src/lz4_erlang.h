@@ -36,7 +36,6 @@
     R(LZ4F_dctx)
 
 // List of functions defined in this NIF.
-// @todo compress_frame_bound, compress_frame
 
 #define NIF_FUNCTION_NAME(f) lz4_erlang_ ## f
 #define NIF_FUNCTIONS(F) \
