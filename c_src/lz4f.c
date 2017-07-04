@@ -46,8 +46,7 @@ NIF_FUNCTION(lz4f_compress_frame)
 
     if (LZ4F_isError(dstSize)) {
         enif_release_binary(&dstBin);
-        // @todo Better error.
-        return enif_make_badarg(env);
+        return enif_raise_exception(env, enif_make_atom(env, LZ4F_getErrorName(dstSize)));
     }
 
     if (!enif_realloc_binary(&dstBin, dstSize)) {
@@ -67,8 +66,7 @@ NIF_FUNCTION(lz4f_create_compression_context)
     result = LZ4F_createCompressionContext(&cctx, LZ4F_VERSION);
 
     if (LZ4F_isError(result))
-        // @todo Better error.
-        return enif_make_badarg(env);
+        return enif_raise_exception(env, enif_make_atom(env, LZ4F_getErrorName(result)));
 
     NIF_RES_TO_TERM(LZ4F_cctx, cctx, term);
 
@@ -96,8 +94,7 @@ NIF_FUNCTION(lz4f_compress_begin)
 
     if (LZ4F_isError(dstSize)) {
         enif_release_binary(&dstBin);
-        // @todo Better error.
-        return enif_make_badarg(env);
+        return enif_raise_exception(env, enif_make_atom(env, LZ4F_getErrorName(dstSize)));
     }
 
     if (!enif_realloc_binary(&dstBin, dstSize)) {
@@ -132,8 +129,7 @@ NIF_FUNCTION(lz4f_compress_update)
 
     if (LZ4F_isError(dstSize)) {
         enif_release_binary(&dstBin);
-        // @todo Better error.
-        return enif_make_badarg(env);
+        return enif_raise_exception(env, enif_make_atom(env, LZ4F_getErrorName(dstSize)));
     }
 
     if (!enif_realloc_binary(&dstBin, dstSize)) {
@@ -169,8 +165,7 @@ NIF_FUNCTION(lz4f_flush)
 
     if (LZ4F_isError(dstSize)) {
         enif_release_binary(&dstBin);
-        // @todo Better error.
-        return enif_make_badarg(env);
+        return enif_raise_exception(env, enif_make_atom(env, LZ4F_getErrorName(dstSize)));
     }
 
     if (!enif_realloc_binary(&dstBin, dstSize)) {
@@ -206,8 +201,7 @@ NIF_FUNCTION(lz4f_compress_end)
 
     if (LZ4F_isError(dstSize)) {
         enif_release_binary(&dstBin);
-        // @todo Better error.
-        return enif_make_badarg(env);
+        return enif_raise_exception(env, enif_make_atom(env, LZ4F_getErrorName(dstSize)));
     }
 
     if (!enif_realloc_binary(&dstBin, dstSize)) {
@@ -227,8 +221,7 @@ NIF_FUNCTION(lz4f_create_decompression_context)
     result = LZ4F_createDecompressionContext(&dctx, LZ4F_VERSION);
 
     if (LZ4F_isError(result))
-        // @todo Better error.
-        return enif_make_badarg(env);
+        return enif_raise_exception(env, enif_make_atom(env, LZ4F_getErrorName(result)));
 
     NIF_RES_TO_TERM(LZ4F_dctx, dctx, term);
 
