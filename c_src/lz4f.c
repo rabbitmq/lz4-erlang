@@ -39,8 +39,8 @@ NIF_FUNCTION(lz4f_compress_frame)
 
     dstCapacity = LZ4F_compressFrameBound(srcBin.size, &preferences);
 
-    // @todo Better error.
-    BADARG_IF(!enif_alloc_binary(dstCapacity, &dstBin));
+    if (!enif_alloc_binary(dstCapacity, &dstBin))
+        return enif_raise_exception(env, atom_enomem);
 
     dstSize = LZ4F_compressFrame(dstBin.data, dstCapacity, srcBin.data, srcBin.size, &preferences);
 
@@ -52,8 +52,7 @@ NIF_FUNCTION(lz4f_compress_frame)
 
     if (!enif_realloc_binary(&dstBin, dstSize)) {
         enif_release_binary(&dstBin);
-        // @todo Better error.
-        return enif_make_badarg(env);
+        return enif_raise_exception(env, atom_enomem);
     }
 
     return enif_make_binary(env, &dstBin);
@@ -89,8 +88,8 @@ NIF_FUNCTION(lz4f_compress_begin)
 
     // @todo prefs
 
-    // @todo Better error.
-    BADARG_IF(!enif_alloc_binary(LZ4F_HEADER_SIZE_MAX, &dstBin));
+    if (!enif_alloc_binary(LZ4F_HEADER_SIZE_MAX, &dstBin))
+        return enif_raise_exception(env, atom_enomem);
 
     dstSize = LZ4F_compressBegin(NIF_RES_GET(LZ4F_cctx, cctx_res),
         dstBin.data, LZ4F_HEADER_SIZE_MAX, &preferences);
@@ -103,8 +102,7 @@ NIF_FUNCTION(lz4f_compress_begin)
 
     if (!enif_realloc_binary(&dstBin, dstSize)) {
         enif_release_binary(&dstBin);
-        // @todo Better error.
-        return enif_make_badarg(env);
+        return enif_raise_exception(env, atom_enomem);
     }
 
     return enif_make_binary(env, &dstBin);
@@ -124,8 +122,8 @@ NIF_FUNCTION(lz4f_compress_update)
     // as an optimization.
     dstCapacity = LZ4F_compressBound(srcBin.size, NULL);
 
-    // @todo Better error.
-    BADARG_IF(!enif_alloc_binary(dstCapacity, &dstBin));
+    if (!enif_alloc_binary(dstCapacity, &dstBin))
+        return enif_raise_exception(env, atom_enomem);
 
     // We pass NULL because we can't guarantee that the source binary
     // data will remain for future calls. It may be garbage collected.
@@ -140,8 +138,7 @@ NIF_FUNCTION(lz4f_compress_update)
 
     if (!enif_realloc_binary(&dstBin, dstSize)) {
         enif_release_binary(&dstBin);
-        // @todo Better error.
-        return enif_make_badarg(env);
+        return enif_raise_exception(env, atom_enomem);
     }
 
     return enif_make_binary(env, &dstBin);
@@ -162,8 +159,8 @@ NIF_FUNCTION(lz4f_flush)
     // as an optimization.
     dstCapacity = LZ4F_compressBound(0, NULL);
 
-    // @todo Better error.
-    BADARG_IF(!enif_alloc_binary(dstCapacity, &dstBin));
+    if (!enif_alloc_binary(dstCapacity, &dstBin))
+        return enif_raise_exception(env, atom_enomem);
 
     // We pass NULL because we can't guarantee that the source binary
     // data will remain for future calls. It may be garbage collected.
@@ -178,8 +175,7 @@ NIF_FUNCTION(lz4f_flush)
 
     if (!enif_realloc_binary(&dstBin, dstSize)) {
         enif_release_binary(&dstBin);
-        // @todo Better error.
-        return enif_make_badarg(env);
+        return enif_raise_exception(env, atom_enomem);
     }
 
     return enif_make_binary(env, &dstBin);
@@ -200,8 +196,8 @@ NIF_FUNCTION(lz4f_compress_end)
     // as an optimization.
     dstCapacity = LZ4F_compressBound(0, NULL);
 
-    // @todo Better error.
-    BADARG_IF(!enif_alloc_binary(dstCapacity, &dstBin));
+    if (!enif_alloc_binary(dstCapacity, &dstBin))
+        return enif_raise_exception(env, atom_enomem);
 
     // We pass NULL because we can't guarantee that the source binary
     // data will remain for future calls. It may be garbage collected.
@@ -216,8 +212,7 @@ NIF_FUNCTION(lz4f_compress_end)
 
     if (!enif_realloc_binary(&dstBin, dstSize)) {
         enif_release_binary(&dstBin);
-        // @todo Better error.
-        return enif_make_badarg(env);
+        return enif_raise_exception(env, atom_enomem);
     }
 
     return enif_make_binary(env, &dstBin);
@@ -267,8 +262,7 @@ NIF_FUNCTION(lz4f_decompress)
 
         if (!enif_alloc_binary(dstSize, &dstBin)) {
             // @todo Free what was allocated.
-            // @todo Better error.
-            return enif_make_badarg(env);
+            return enif_raise_exception(env, atom_enomem);
         }
 
         LZ4F_decompress(NIF_RES_GET(LZ4F_dctx, dctx_res),
@@ -279,15 +273,13 @@ NIF_FUNCTION(lz4f_decompress)
         if (LZ4F_isError(dstSize)) {
             // @todo Releease everything.
             enif_release_binary(&dstBin);
-            // @todo Better error.
-            return enif_make_badarg(env);
+            return enif_raise_exception(env, atom_enomem);
         }
 
         if (!enif_realloc_binary(&dstBin, dstSize)) {
             // @todo Releease everything.
             enif_release_binary(&dstBin);
-            // @todo Better error.
-            return enif_make_badarg(env);
+            return enif_raise_exception(env, atom_enomem);
         }
 
         head = enif_make_list_cell(env, enif_make_binary(env, &dstBin), head);

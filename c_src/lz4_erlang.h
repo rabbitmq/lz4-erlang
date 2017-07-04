@@ -26,6 +26,7 @@
 #define NIF_ATOMS(A) \
     A(ok) \
     A(done) \
+    A(enomem) \
     A(_nif_thread_ret_)
 
 // List of resources used by this NIF.
