@@ -254,7 +254,6 @@ NIF_FUNCTION(lz4f_decompress)
         dstSize = 65536; // Arbitrary maximum size of chunk.
 
         if (!enif_alloc_binary(dstSize, &dstBin)) {
-            // @todo Free what was allocated.
             return enif_raise_exception(env, atom_enomem);
         }
 
@@ -264,13 +263,11 @@ NIF_FUNCTION(lz4f_decompress)
             NULL);
 
         if (LZ4F_isError(dstSize)) {
-            // @todo Releease everything.
             enif_release_binary(&dstBin);
             return enif_raise_exception(env, atom_enomem);
         }
 
         if (!enif_realloc_binary(&dstBin, dstSize)) {
-            // @todo Releease everything.
             enif_release_binary(&dstBin);
             return enif_raise_exception(env, atom_enomem);
         }
