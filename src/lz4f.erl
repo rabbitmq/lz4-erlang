@@ -103,3 +103,5 @@ decompress(Data) ->
 -spec decompress(dctx(), binary()) -> iolist().
 decompress(Dctx, Data) ->
     lz4_nif:lz4f_decompress(Dctx, Data).
+
+%% @todo LZ4F_resetDecompressionContext
