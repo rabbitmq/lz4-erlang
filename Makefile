@@ -15,7 +15,10 @@ dep_ct_helper = git https://github.com/extend/ct_helper master
 include erlang.mk
 
 CFLAGS += -I $(DEPS_DIR)/lz4_src/lib
-LDLIBS += -L $(DEPS_DIR)/lz4_src/lib -llz4
+# This is required in order to build a liblz4.a that we can
+# include in our shared library.
+export CPPFLAGS += -shared -fPIC
+LDLIBS += $(DEPS_DIR)/lz4_src/lib/liblz4.a
 
 -include c_src/env.mk
 
