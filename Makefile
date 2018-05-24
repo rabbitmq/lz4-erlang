@@ -4,7 +4,7 @@ PROJECT_VERSION = 0.1.0
 
 BUILD_DEPS = lz4_src nif_helpers
 dep_lz4_src = git https://github.com/lz4/lz4 v1.8.1.2
-dep_nif_helpers = git https://github.com/ninenines/nif_helpers master
+dep_nif_helpers = git https://github.com/ninenines/nif_helpers ead6adc15fca3c314351523080d2ccb1956d5956
 DEP_PLUGINS = nif_helpers
 
 C_SRC_OUTPUT = $(CURDIR)/priv/lz4_nif
