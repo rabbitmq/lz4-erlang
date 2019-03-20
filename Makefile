@@ -32,7 +32,7 @@ scan-build:
 
 # Download a large file for use in compression tests.
 
-PDF_REFERENCE = http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf
+PDF_REFERENCE = https://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf
 
 test-build:: $(TEST_DIR)/lz4f_SUITE_data/pdf_reference_1-7.pdf
 
