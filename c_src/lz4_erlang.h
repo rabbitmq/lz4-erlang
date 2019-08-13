@@ -27,6 +27,25 @@
     A(ok) \
     A(done) \
     A(enomem) \
+    A(true) \
+    A(false) \
+    A(frame_info) \
+    A(block_size_id) \
+    A(default) \
+    A(max64KB) \
+    A(max256KB) \
+    A(max1MB) \
+    A(max4MB) \
+    A(block_mode) \
+    A(linked) \
+    A(independent) \
+    A(content_checksum) \
+    A(frame_type) \
+    A(frame) \
+    A(skippable_frame) \
+    A(content_size) \
+    A(compression_level) \
+    A(auto_flush) \
     A(_nif_thread_ret_)
 
 // List of resources used by this NIF.

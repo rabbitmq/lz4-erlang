@@ -27,12 +27,32 @@ compress_frame1(Config) ->
     File = iolist_to_binary(lz4f:decompress(Compressed)),
     ok.
 
+compress_frame1_opts(Config) ->
+    doc("Use lz4f:compress_frame/2 and then decompress back."),
+    {ok, File} = file:read_file(config(test_file, Config)),
+    Compressed = lz4f:compress_frame(File, #{compression_level => 3}),
+    File = iolist_to_binary(lz4f:decompress(Compressed)),
+    ok.
+
 compress_update(Config) ->
     doc("Stream compress with lz4f:compress_update/2 and then decompress back."),
     {ok, File} = file:read_file(config(test_file, Config)),
     Chunks = do_slice(File),
     Ctx = lz4f:create_compression_context(),
     Begin = lz4f:compress_begin(Ctx),
+    CompressedChunks = [lz4f:compress_update(Ctx, C) || C <- Chunks],
+    End = lz4f:compress_end(Ctx),
+    Compressed = iolist_to_binary([Begin, CompressedChunks, End]),
+    File = iolist_to_binary(lz4f:decompress(Compressed)),
+    ok.
+
+compress_update_opts(Config) ->
+    doc("Stream compress with lz4f:compress_update/2 and then decompress back. "
+        "The compression is initialized with lz4f:compress_begin/2."),
+    {ok, File} = file:read_file(config(test_file, Config)),
+    Chunks = do_slice(File),
+    Ctx = lz4f:create_compression_context(),
+    Begin = lz4f:compress_begin(Ctx, #{compression_level => 3}),
     CompressedChunks = [lz4f:compress_update(Ctx, C) || C <- Chunks],
     End = lz4f:compress_end(Ctx),
     Compressed = iolist_to_binary([Begin, CompressedChunks, End]),
@@ -49,6 +69,18 @@ compress_flush(Config) ->
         flush -> lz4f:flush(Ctx);
         _ -> lz4f:compress_update(Ctx, C)
     end || C <- Chunks],
+    End = lz4f:compress_end(Ctx),
+    Compressed = iolist_to_binary([Begin, CompressedChunks, End]),
+    File = iolist_to_binary(lz4f:decompress(Compressed)),
+    ok.
+
+compress_auto_flush(Config) ->
+    doc("Stream compress with auto_flush enabled and then decompress back."),
+    {ok, File} = file:read_file(config(test_file, Config)),
+    Chunks = do_slice(File),
+    Ctx = lz4f:create_compression_context(),
+    Begin = lz4f:compress_begin(Ctx, #{auto_flush => true}),
+    CompressedChunks = [lz4f:compress_update(Ctx, C) || C <- Chunks],
     End = lz4f:compress_end(Ctx),
     Compressed = iolist_to_binary([Begin, CompressedChunks, End]),
     File = iolist_to_binary(lz4f:decompress(Compressed)),

@@ -25,6 +25,79 @@ void dtor_LZ4F_dctx(ErlNifEnv* env, void* obj)
     LZ4F_freeDecompressionContext(NIF_RES_GET(LZ4F_dctx, obj));
 }
 
+int opts_to_lz4f_preferences(ErlNifEnv*, ERL_NIF_TERM, LZ4F_preferences_t*);
+int opts_to_lz4f_preferences(ErlNifEnv* env, ERL_NIF_TERM opts, LZ4F_preferences_t* preferences)
+{
+    ERL_NIF_TERM info, value;
+    ErlNifUInt64 ull;
+
+    if (enif_get_map_value(env, opts, atom_frame_info, &info)) {
+        if (!enif_is_map(env, info))
+            return 0;
+
+        if (enif_get_map_value(env, info, atom_block_size_id, &value)) {
+            if (value == atom_default)
+                preferences->frameInfo.blockSizeID = LZ4F_default;
+            else if (value == atom_max64KB)
+                preferences->frameInfo.blockSizeID = LZ4F_max64KB;
+            else if (value == atom_max256KB)
+                preferences->frameInfo.blockSizeID = LZ4F_max256KB;
+            else if (value == atom_max1MB)
+                preferences->frameInfo.blockSizeID = LZ4F_max1MB;
+            else if (value == atom_max4MB)
+                preferences->frameInfo.blockSizeID = LZ4F_max4MB;
+            else
+                return 0;
+        }
+
+        if (enif_get_map_value(env, info, atom_block_mode, &value)) {
+            if (value == atom_linked)
+                preferences->frameInfo.blockMode = LZ4F_blockLinked;
+            else if (value == atom_independent)
+                preferences->frameInfo.blockMode = LZ4F_blockIndependent;
+            else
+                return 0;
+        }
+
+        if (enif_get_map_value(env, info, atom_content_checksum, &value)) {
+            if (value == atom_true)
+                preferences->frameInfo.contentChecksumFlag = 1;
+            else if (value != atom_false)
+                return 0;
+        }
+
+        if (enif_get_map_value(env, info, atom_frame_type, &value)) {
+            if (value == atom_frame)
+                preferences->frameInfo.frameType = LZ4F_frame;
+            else if (value == atom_skippable_frame)
+                preferences->frameInfo.frameType = LZ4F_skippableFrame;
+            else
+                return 0;
+        }
+
+        if (enif_get_map_value(env, info, atom_content_size, &value)) {
+            if (!enif_get_uint64(env, value, &ull))
+                return 0;
+
+            preferences->frameInfo.contentSize = ull;
+        }
+    }
+
+    if (enif_get_map_value(env, opts, atom_compression_level, &value)) {
+        if (!enif_get_int(env, value, &preferences->compressionLevel))
+            return 0;
+    }
+
+    if (enif_get_map_value(env, opts, atom_auto_flush, &value)) {
+        if (value == atom_true)
+            preferences->autoFlush = 1;
+        else if (value != atom_false)
+            return 0;
+    }
+
+    return 1;
+}
+
 NIF_FUNCTION(lz4f_compress_frame)
 {
     LZ4F_preferences_t preferences;
@@ -32,10 +105,11 @@ NIF_FUNCTION(lz4f_compress_frame)
     ErlNifBinary srcBin, dstBin;
 
     BADARG_IF(!enif_inspect_binary(env, argv[0], &srcBin));
+    BADARG_IF(!enif_is_map(env, argv[1]));
 
     memset(&preferences, 0, sizeof(preferences));
-
-    // @todo prefs
+    if (!opts_to_lz4f_preferences(env, argv[1], &preferences))
+        return enif_make_badarg(env);
 
     dstCapacity = LZ4F_compressFrameBound(srcBin.size, &preferences);
 
@@ -81,10 +155,11 @@ NIF_FUNCTION(lz4f_compress_begin)
     ErlNifBinary dstBin;
 
     BADARG_IF(!enif_get_resource(env, argv[0], res_LZ4F_cctx, &cctx_res));
+    BADARG_IF(!enif_is_map(env, argv[1]));
 
     memset(&preferences, 0, sizeof(preferences));
-
-    // @todo prefs
+    if (!opts_to_lz4f_preferences(env, argv[1], &preferences))
+        return enif_make_badarg(env);
 
     if (!enif_alloc_binary(LZ4F_HEADER_SIZE_MAX, &dstBin))
         return enif_raise_exception(env, atom_enomem);

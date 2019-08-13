@@ -46,7 +46,7 @@
 
 -type opts() :: #{
     frame_info => frame_info(),
-    compression_level => 0..16,
+    compression_level => integer(),
     auto_flush => boolean()
 }.
 
