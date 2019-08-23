@@ -1,9 +1,9 @@
 PROJECT = lz4
-PROJECT_DESCRIPTION = New project
-PROJECT_VERSION = 0.1.0
+PROJECT_DESCRIPTION = An LZ4 compression library that wraps an NIF
+PROJECT_VERSION = 0.2.0
 
 BUILD_DEPS = lz4_src nif_helpers
-dep_lz4_src = git https://github.com/lz4/lz4 v1.9.1
+dep_lz4_src = git https://github.com/lz4/lz4 v1.9.2
 dep_nif_helpers = git https://github.com/ninenines/nif_helpers ead6adc15fca3c314351523080d2ccb1956d5956
 DEP_PLUGINS = nif_helpers
 

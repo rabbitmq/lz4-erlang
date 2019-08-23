@@ -1,6 +1,6 @@
 {application, 'lz4', [
-	{description, "New project"},
-	{vsn, "0.1.0"},
+	{description, "An LZ4 compression library that wraps an NIF"},
+	{vsn, "0.2.0"},
 	{modules, ['lz4_nif','lz4f']},
 	{registered, []},
 	{applications, [kernel,stdlib]},
