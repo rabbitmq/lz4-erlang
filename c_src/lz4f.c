@@ -183,28 +183,42 @@ NIF_FUNCTION(lz4f_compress_begin)
 NIF_FUNCTION(lz4f_compress_update)
 {
     void* cctx_res;
-    size_t dstCapacity, dstSize;
-    ErlNifBinary srcBin, dstBin;
+    LZ4F_cctx* cctx;
+    ErlNifIOVec prealloc, *iovec = &prealloc;
+    size_t dstCapacity, dstSize = 0, chunkSize;
+    ErlNifBinary dstBin;
+    ERL_NIF_TERM compressed, tail;
+    int i;
 
     BADARG_IF(!enif_get_resource(env, argv[0], res_LZ4F_cctx, &cctx_res));
-    BADARG_IF(!enif_inspect_binary(env, argv[1], &srcBin));
+    BADARG_IF(!enif_inspect_iovec(env, 256, argv[1], &tail, &iovec));
 
     // @todo We pass NULL because we don't currently keep the preferences
     // setup when the user began the compression. It might be done later
     // as an optimization.
-    dstCapacity = LZ4F_compressBound(srcBin.size, NULL);
+    dstCapacity = LZ4F_compressBound(iovec->size, NULL);
 
     if (!enif_alloc_binary(dstCapacity, &dstBin))
         return enif_raise_exception(env, atom_enomem);
 
-    // We pass NULL because we can't guarantee that the source binary
-    // data will remain for future calls. It may be garbage collected.
-    dstSize = LZ4F_compressUpdate(NIF_RES_GET(LZ4F_cctx, cctx_res),
-        dstBin.data, dstCapacity, srcBin.data, srcBin.size, NULL);
+    cctx = NIF_RES_GET(LZ4F_cctx, cctx_res);
 
-    if (LZ4F_isError(dstSize)) {
-        enif_release_binary(&dstBin);
-        return enif_raise_exception(env, enif_make_atom(env, LZ4F_getErrorName(dstSize)));
+    for (i = 0; i < iovec->iovcnt; i++) {
+        // We pass NULL because we can't guarantee that the source binary
+        // data will remain for future calls. It may be garbage collected.
+        chunkSize = LZ4F_compressUpdate(cctx,
+            dstBin.data + dstSize,
+            dstCapacity - dstSize,
+            iovec->iov[i].iov_base,
+            iovec->iov[i].iov_len,
+            NULL);
+
+        if (LZ4F_isError(chunkSize)) {
+            enif_release_binary(&dstBin);
+            return enif_raise_exception(env, enif_make_atom(env, LZ4F_getErrorName(dstSize)));
+        }
+
+        dstSize += chunkSize;
     }
 
     if (!enif_realloc_binary(&dstBin, dstSize)) {
@@ -212,7 +226,12 @@ NIF_FUNCTION(lz4f_compress_update)
         return enif_raise_exception(env, atom_enomem);
     }
 
-    return enif_make_binary(env, &dstBin);
+    compressed = enif_make_binary(env, &dstBin);
+
+    if (enif_is_empty_list(env, tail))
+        return enif_make_tuple2(env, atom_ok, compressed);
+
+    return enif_make_tuple3(env, atom_continue, compressed, tail);
 }
 
 NIF_FUNCTION(lz4f_flush)

@@ -46,6 +46,19 @@ compress_update(Config) ->
     File = iolist_to_binary(lz4f:decompress(Compressed)),
     ok.
 
+compress_update_iovec(Config) ->
+    doc("Stream compress with lz4f:compress_update/2 and then decompress back. "
+        "The compression is done on iovec() data rather than binary()."),
+    {ok, File} = file:read_file(config(test_file, Config)),
+    Chunks = do_slice(File),
+    Ctx = lz4f:create_compression_context(),
+    Begin = lz4f:compress_begin(Ctx),
+    CompressedChunks = [lz4f:compress_update(Ctx, do_slice_iovec(C)) || C <- Chunks],
+    End = lz4f:compress_end(Ctx),
+    Compressed = iolist_to_binary([Begin, CompressedChunks, End]),
+    File = iolist_to_binary(lz4f:decompress(Compressed)),
+    ok.
+
 compress_update_opts(Config) ->
     doc("Stream compress with lz4f:compress_update/2 and then decompress back. "
         "The compression is initialized with lz4f:compress_begin/2."),
@@ -111,4 +124,9 @@ do_insert_flush([H|T], N) ->
 do_slice(<<Bin:1000000/binary, R/bits>>) ->
     [Bin|do_slice(R)];
 do_slice(Bin) ->
+    [Bin].
+
+do_slice_iovec(<<Bin:1000/binary, R/bits>>) ->
+    [Bin|do_slice_iovec(R)];
+do_slice_iovec(Bin) ->
     [Bin].

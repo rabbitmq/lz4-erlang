@@ -26,6 +26,7 @@
 #define NIF_ATOMS(A) \
     A(ok) \
     A(done) \
+    A(continue) \
     A(enomem) \
     A(true) \
     A(false) \
