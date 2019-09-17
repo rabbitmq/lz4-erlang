@@ -76,9 +76,19 @@ compress_begin(Cctx) ->
 compress_begin(Cctx, Opts) ->
     lz4_nif:lz4f_compress_begin(Cctx, Opts).
 
--spec compress_update(cctx(), binary()) -> binary().
+-spec compress_update(cctx(), binary() | [binary()]) -> iolist().
+compress_update(Cctx, Data) when is_list(Data) ->
+    compress_update_loop(Cctx, Data, []);
 compress_update(Cctx, Data) ->
-    lz4_nif:lz4f_compress_update(Cctx, Data).
+    compress_update_loop(Cctx, [Data], []).
+
+compress_update_loop(Cctx, Data, Acc) ->
+    case lz4_nif:lz4f_compress_update(Cctx, Data) of
+        {ok, Compressed} ->
+            lists:reverse([Compressed|Acc]);
+        {continue, Compressed, Rest} ->
+            compress_update_loop(Cctx, Rest, [Compressed|Acc])
+    end.
 
 -spec flush(cctx()) -> binary().
 flush(Cctx) ->
