@@ -9,6 +9,4 @@ This project is young and immature.
 
 ## License and Copyright
 
-See [LICENSE](./LICENSE).
-
 (c) 2017-2019 Pivotal Software, Inc.
