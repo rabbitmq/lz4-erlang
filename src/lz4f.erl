@@ -14,6 +14,9 @@
 
 -module(lz4f).
 
+%% Status.
+-export([support_available/0]).
+
 %% Simple compression.
 -export([compress_frame/1]).
 -export([compress_frame/2]).
@@ -55,6 +58,16 @@
 
 -opaque dctx() :: <<>>. %% Resource.
 -export_type([dctx/0]).
+
+-spec support_available() -> boolean().
+support_available() ->
+    try
+        _ = lz4_nif:module_info(),
+        true
+    catch
+        _:_ ->
+            false
+    end.
 
 -spec compress_frame(binary()) -> binary().
 compress_frame(Data) ->
