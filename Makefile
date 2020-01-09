@@ -7,6 +7,9 @@ dep_lz4_src = git https://github.com/lz4/lz4 v1.9.2
 dep_nif_helpers = git https://github.com/ninenines/nif_helpers ead6adc15fca3c314351523080d2ccb1956d5956
 DEP_PLUGINS = nif_helpers
 
+DEPS = host_triple
+dep_host_triple = git https://github.com/rabbitmq/host_triple.git master
+
 C_SRC_OUTPUT = $(CURDIR)/priv/lz4_nif
 
 TEST_DEPS = ct_helper

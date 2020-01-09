@@ -3,6 +3,6 @@
 	{vsn, "0.2.0"},
 	{modules, ['lz4_nif','lz4f']},
 	{registered, []},
-	{applications, [kernel,stdlib]},
+	{applications, [kernel,stdlib,host_triple]},
 	{env, []}
 ]}.
