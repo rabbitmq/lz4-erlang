@@ -25,14 +25,11 @@
 -export([lz4f_get_frame_info/2]).
 -export([lz4f_decompress/2]).
 
+-include_lib("host_triple/include/code_loading.hrl").
+
 -on_load(on_load/0).
 on_load() ->
-    case code:priv_dir(lz4) of
-        {error, _} ->
-            {error, {load_failed, "Could not determine the lz4-erlang priv/ directory."}};
-        Path ->
-            erlang:load_nif(filename:join(Path, atom_to_list(?MODULE)), 0)
-    end.
+    ?load_nif_from_host_triple_dir(lz4, atom_to_list(?MODULE), 0).
 
 %% lz4f.
 
