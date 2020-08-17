@@ -9,7 +9,7 @@ dep_nif_helpers = git https://github.com/ninenines/nif_helpers ead6adc15fca3c314
 DEP_PLUGINS = nif_helpers
 
 DEPS = host_triple
-dep_host_triple = git https://github.com/rabbitmq/host_triple.git master
+dep_host_triple = hex 0.1.0
 
 C_SRC_OUTPUT = $(CURDIR)/priv/lz4_nif
 
