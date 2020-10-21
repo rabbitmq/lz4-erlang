@@ -18,7 +18,7 @@ dep_ct_helper = git https://github.com/extend/ct_helper master
 
 include erlang.mk
 
-CFLAGS += -I $(DEPS_DIR)/lz4_src/lib
+CFLAGS += -I $(DEPS_DIR)/lz4_src/lib -Wno-implicit-function-declaration -Wno-unused-command-line-argument
 # This is required in order to build a liblz4.a that we can
 # include in our shared library.
 export CPPFLAGS += -shared -fPIC
