@@ -6,8 +6,8 @@
 c_src/env.mk
 c_src/*.o
 deps/
-ebin/*.beam
-ebin/test
+ebin/
+_build/
 erl_crash.dump
 logs/
 lz4.d
