@@ -1,0 +1,8 @@
+{"1.2.0",
+[{<<"host_triple">>,{pkg,<<"host_triple">>,<<"0.1.0">>},0}]}.
+[
+{pkg_hash,[
+ {<<"host_triple">>, <<"CC5DC084CB5E4D8122CB33AEFE76977F3C25319278C1011868B7CEE2EBA98FD4">>}]},
+{pkg_hash_ext,[
+ {<<"host_triple">>, <<"26FEE396A7C0E1D66115E74638A795366496B59BF13F474F3AE1C4491FD14FC5">>}]}
+].
