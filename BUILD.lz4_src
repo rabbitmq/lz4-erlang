@@ -1,0 +1,27 @@
+exports_files([
+    "lib/lz4.h",
+    "lib/lz4frame.h",
+])
+
+genrule(
+    name = "static_library_linux",
+    srcs = glob(["lib/**/*", "Makefile.inc"],
+                exclude = ["lib/liblz4.a"]),
+    outs = [
+        "lib/liblz4.a",
+    ],
+    cmd = """set -euo pipefail
+make -C external/lz4_src/lib
+cp external/lz4_src/lib/liblz4.a $@
+""",
+    visibility = ["//visibility:public"],
+    exec_compatible_with = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+        "@bazel_tools//tools/cpp:clang",
+    ],
+    target_compatible_with = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+)
