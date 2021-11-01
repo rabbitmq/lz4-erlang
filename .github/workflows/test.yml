@@ -1,9 +1,7 @@
 name: Test
 on: push
-
 jobs:
-
-  build:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -13,29 +11,6 @@ jobs:
     steps:
     - name: CHECKOUT
       uses: actions/checkout@v2
-    - name: CONFIGURE ERLANG
-      uses: gleam-lang/setup-erlang@v1.1.2
-      with:
-        otp-version: ${{ matrix.erlang_version }}
-    - name: BUILD
-      run: make
-    - name: CHECK
-      run: make check
-
-  build-bazel:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        erlang_version:
-        - "23"
-        - "24"
-    steps:
-    - name: CHECKOUT
-      uses: actions/checkout@v2
-    - name: CONFIGURE ERLANG
-      uses: gleam-lang/setup-erlang@v1.1.2
-      with:
-        otp-version: ${{ matrix.erlang_version }}
     - name: CONFIGURE BAZEL
       run: |
         echo "${{ secrets.BUILDBUDDY_CERT }}" > buildbuddy-cert.pem
