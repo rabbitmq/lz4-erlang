@@ -33,8 +33,8 @@ rules_pkg_dependencies()
 
 http_archive(
     name = "bazel-erlang",
-    strip_prefix = "bazel-erlang-nifs",
-    urls = ["https://github.com/rabbitmq/bazel-erlang/archive/refs/heads/nifs.zip"],
+    strip_prefix = "bazel-erlang-main",
+    urls = ["https://github.com/rabbitmq/bazel-erlang/archive/refs/heads/main.zip"],
 )
 
 load("@bazel-erlang//:bazel_erlang.bzl", "bazel_erlang_deps")
