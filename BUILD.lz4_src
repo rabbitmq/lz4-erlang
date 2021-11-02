@@ -5,8 +5,13 @@ exports_files([
 
 genrule(
     name = "static_library_linux",
-    srcs = glob(["lib/**/*", "Makefile.inc"],
-                exclude = ["lib/liblz4.a"]),
+    srcs = glob(
+        [
+            "lib/**/*",
+            "Makefile.inc",
+        ],
+        exclude = ["lib/liblz4.a"],
+    ),
     outs = [
         "lib/liblz4.a",
     ],
@@ -14,7 +19,6 @@ genrule(
 make -C external/lz4_src/lib
 cp external/lz4_src/lib/liblz4.a $@
 """,
-    visibility = ["//visibility:public"],
     exec_compatible_with = [
         "@platforms//os:linux",
         "@platforms//cpu:x86_64",
@@ -24,4 +28,5 @@ cp external/lz4_src/lib/liblz4.a $@
         "@platforms//os:linux",
         "@platforms//cpu:x86_64",
     ],
+    visibility = ["//visibility:public"],
 )
