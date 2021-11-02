@@ -49,10 +49,6 @@ git_repository(
     remote = "https://github.com/rabbitmq/rabbitmq-server.git",
 )
 
-# load("@rabbitmq-server//:workspace_helpers.bzl", "rabbitmq_external_deps")
-
-# rabbitmq_external_deps()
-
 load("@bazel-erlang//:hex_pm.bzl", "hex_pm_bazel_erlang_lib")
 
 hex_pm_bazel_erlang_lib(
