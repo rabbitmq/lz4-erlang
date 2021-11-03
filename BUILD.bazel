@@ -1,0 +1,103 @@
+load("@bazel-erlang//:bazel_erlang_lib.bzl", "erlang_lib", "test_erlang_lib")
+load("@bazel-erlang//:xref.bzl", "xref")
+load("@bazel-erlang//:dialyze.bzl", "DEFAULT_PLT_APPS", "dialyze", "plt")
+load("@bazel-erlang//:ct_sharded.bzl", "assert_suites", "ct_suite")
+
+APP_NAME = "lz4"
+
+APP_DESCRIPTION = "An LZ4 compression library that wraps an NIF"
+
+APP_VERSION = "1.9.2.3"
+
+DEPS = [
+    "@host_triple//:bazel_erlang_lib",
+]
+
+cc_binary(
+    name = "lz4_nif_linux",
+    srcs = glob([
+        "c_src/**/*.c",
+        "c_src/**/*.h",
+    ]) + [
+        "@lz4_src//:lib/lz4.h",
+        "@lz4_src//:lib/lz4frame.h",
+        "@lz4_src//:lib/liblz4.a",
+        "@nif_helpers//:nif_helpers.h",
+        "@nif_helpers//:nif_helpers.c",
+    ],
+    copts = [
+        "-I external/lz4_src/lib",
+        "-I external/nif_helpers",
+        "-fPIC",
+        # "-Wno-implicit-function-declaration",
+        # "-Wno-unused-command-line-argument",
+        # "-v",
+    ],
+    exec_compatible_with = [
+        "@bazel_tools//platforms:x86_64",
+        "@bazel_tools//platforms:linux",
+        "@bazel_tools//tools/cpp:clang",
+    ],
+    linkshared = True,
+    target_compatible_with = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+genrule(
+    name = "lz4_nif_so",
+    srcs = [":lz4_nif_linux"],
+    outs = ["priv/lz4_nif.so"],
+    cmd = "cp $< $@",
+)
+
+erlang_lib(
+    app_description = APP_DESCRIPTION,
+    app_name = APP_NAME,
+    app_version = APP_VERSION,
+    extra_priv = ["priv/lz4_nif.so"],
+    deps = DEPS,
+)
+
+test_erlang_lib(
+    app_description = APP_DESCRIPTION,
+    app_name = APP_NAME,
+    app_version = APP_VERSION,
+    extra_priv = ["priv/lz4_nif.so"],
+    deps = DEPS,
+)
+
+xref(
+    size = "small",
+    tags = ["xref"],
+)
+
+plt(
+    name = "base_plt",
+)
+
+dialyze(
+    size = "small",
+    plt = ":base_plt",
+    tags = ["dialyze"],
+)
+
+genrule(
+    name = "place_reference_file",
+    srcs = ["@pdf_reference//file"],
+    outs = ["test/lz4f_SUITE_data/pdf_reference_1-7.pdf"],
+    cmd = "cp $< $@",
+)
+
+assert_suites([
+    ct_suite(
+        name = "lz4f_SUITE",
+        data = [
+            "test/lz4f_SUITE_data/pdf_reference_1-7.pdf",
+        ],
+        runtime_deps = [
+            "@ct_helper//:bazel_erlang_lib",
+        ],
+    ),
+])

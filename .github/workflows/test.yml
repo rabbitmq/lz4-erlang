@@ -1,0 +1,32 @@
+name: Test
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        erlang_version:
+        - "23"
+        - "24"
+    steps:
+    - name: CHECKOUT
+      uses: actions/checkout@v2
+    - name: CONFIGURE BAZEL
+      run: |
+        echo "${{ secrets.BUILDBUDDY_CERT }}" > buildbuddy-cert.pem
+        echo "${{ secrets.BUILDBUDDY_KEY }}" > buildbuddy-key.pem
+        cat << EOF >> user.bazelrc
+          build:buildbuddy --tls_client_certificate=buildbuddy-cert.pem
+          build:buildbuddy --tls_client_key=buildbuddy-key.pem
+
+          build:buildbuddy --build_metadata=ROLE=CI
+          build:buildbuddy --build_metadata=VISIBILITY=PUBLIC
+          build:buildbuddy --remote_instance_name=buildbuddy-io/buildbuddy/ci-${{ matrix.erlang_version }}
+        EOF
+
+        bazelisk info release
+    - name: TEST
+      run: |
+        bazelisk test //... \
+          --config=rbe-${{ matrix.erlang_version }} \
+          --verbose_failures
