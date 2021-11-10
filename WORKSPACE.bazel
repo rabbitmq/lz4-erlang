@@ -1,4 +1,5 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository", "new_git_repository")
 
 http_archive(
     name = "io_buildbuddy_buildbuddy_toolchain",
@@ -16,6 +17,12 @@ load("@io_buildbuddy_buildbuddy_toolchain//:rules.bzl", "buildbuddy")
 buildbuddy(
     name = "buildbuddy_toolchain",
     llvm = True,
+)
+
+git_repository(
+    name = "rbe_default",
+    branch = "linux-erlang-24.1",
+    remote = "https://github.com/rabbitmq/rbe-erlang-platform.git"
 )
 
 http_archive(
@@ -41,14 +48,6 @@ http_archive(
 load("@bazel-erlang//:bazel_erlang.bzl", "bazel_erlang_deps")
 
 bazel_erlang_deps()
-
-load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository", "new_git_repository")
-
-git_repository(
-    name = "rabbitmq-server",
-    branch = "master",
-    remote = "https://github.com/rabbitmq/rabbitmq-server.git",
-)
 
 load("@bazel-erlang//:hex_pm.bzl", "hex_pm_bazel_erlang_lib")
 
