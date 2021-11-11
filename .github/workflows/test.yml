@@ -8,9 +8,19 @@ jobs:
         erlang_version:
         - "23"
         - "24"
+        include:
+        - erlang_version: "23"
+          rbe_default_branch: linux-erlang-23.3
+        - erlang_version: "24"
+          rbe_default_branch: linux-erlang-24.1
     steps:
     - name: CHECKOUT
       uses: actions/checkout@v2
+    - name: SELECT ERLANG VERSION
+      run: |
+        sudo npm install --global --silent @bazel/buildozer
+        echo "$(cat WORKSPACE.bazel | npx buildozer 'set branch "${{ matrix.rbe_default_branch }}"' -:rbe_default)" > WORKSPACE.bazel
+        git diff
     - name: CONFIGURE BAZEL
       run: |
         echo "${{ secrets.BUILDBUDDY_CERT }}" > buildbuddy-cert.pem
@@ -22,11 +32,13 @@ jobs:
           build:buildbuddy --build_metadata=ROLE=CI
           build:buildbuddy --build_metadata=VISIBILITY=PUBLIC
           build:buildbuddy --remote_instance_name=buildbuddy-io/buildbuddy/ci-${{ matrix.erlang_version }}
+
+          build:rbe --@bazel-erlang//:erlang_version=${{ matrix.erlang_version }}
         EOF
 
         bazelisk info release
     - name: TEST
       run: |
         bazelisk test //... \
-          --config=rbe-${{ matrix.erlang_version }} \
+          --config=rbe \
           --verbose_failures
