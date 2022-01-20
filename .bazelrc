@@ -24,8 +24,8 @@ build:rbe --host_platform=@rbe_default//config:platform
 build:rbe --platforms=@rbe_default//config:platform
 build:rbe --extra_execution_platforms=@rbe_default//config:platform
 
-build:rbe --@bazel-erlang//:erlang_version=24
-build:rbe --@bazel-erlang//:erlang_home=/usr/lib/erlang
+build:rbe --@rules_erlang//:erlang_version=24
+build:rbe --@rules_erlang//:erlang_home=/usr/lib/erlang
 
 build:rbe --spawn_strategy=remote
 build:rbe --test_strategy=""

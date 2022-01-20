@@ -33,7 +33,7 @@ jobs:
           build:buildbuddy --build_metadata=VISIBILITY=PUBLIC
           build:buildbuddy --remote_instance_name=buildbuddy-io/buildbuddy/ci-${{ matrix.erlang_version }}
 
-          build:rbe --@bazel-erlang//:erlang_version=${{ matrix.erlang_version }}
+          build:rbe --@rules_erlang//:erlang_version=${{ matrix.erlang_version }}
         EOF
 
         bazelisk info release
