@@ -333,7 +333,7 @@ NIF_FUNCTION(lz4f_decompress)
 {
     void* dctx_res;
     ERL_NIF_TERM head, reversed;
-    size_t dstSize, srcRead, srcSize;
+    size_t dstSize, srcRead, srcSize, result;
     ErlNifBinary srcBin, dstBin;
 
     BADARG_IF(!enif_get_resource(env, argv[0], res_LZ4F_dctx, &dctx_res));
@@ -351,14 +351,14 @@ NIF_FUNCTION(lz4f_decompress)
             return enif_raise_exception(env, atom_enomem);
         }
 
-        LZ4F_decompress(NIF_RES_GET(LZ4F_dctx, dctx_res),
+        result = LZ4F_decompress(NIF_RES_GET(LZ4F_dctx, dctx_res),
             dstBin.data, &dstSize,
             srcBin.data + srcRead, &srcSize,
             NULL);
 
-        if (LZ4F_isError(dstSize)) {
+        if (LZ4F_isError(result)) {
             enif_release_binary(&dstBin);
-            return enif_raise_exception(env, atom_enomem);
+            return enif_raise_exception(env, enif_make_atom(env, LZ4F_getErrorName(result)));
         }
 
         if (!enif_realloc_binary(&dstBin, dstSize)) {
