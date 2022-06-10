@@ -1,5 +1,13 @@
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
-load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository", "new_git_repository")
+load(
+    "@bazel_tools//tools/build_defs/repo:http.bzl",
+    "http_archive",
+    "http_file",
+)
+load(
+    "@bazel_tools//tools/build_defs/repo:git.bzl",
+    "git_repository",
+    "new_git_repository",
+)
 
 http_archive(
     name = "io_buildbuddy_buildbuddy_toolchain",
@@ -20,8 +28,8 @@ buildbuddy(
 )
 
 git_repository(
-    name = "rbe_default",
-    branch = "linux-erlang-24.1",
+    name = "rbe",
+    branch = "linux-rbe",
     remote = "https://github.com/rabbitmq/rbe-erlang-platform.git",
 )
 
@@ -38,16 +46,20 @@ load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 
 rules_pkg_dependencies()
 
-http_archive(
+git_repository(
     name = "rules_erlang",
-    sha256 = "7fd0564918537eb72294d17f5f8dc663907b16d712773b1c006e83194746a1c0",
-    strip_prefix = "rules_erlang-2.0.0",
-    urls = ["https://github.com/rabbitmq/rules_erlang/archive/refs/tags/2.0.0.zip"],
+    remote = "https://github.com/rabbitmq/rules_erlang.git",
+    tag = "3.1.0",
 )
 
 load("@rules_erlang//:rules_erlang.bzl", "rules_erlang_dependencies")
 
 rules_erlang_dependencies()
+
+register_toolchains(
+    "//toolchains:erlang_toolchain_external",
+    "//toolchains:erlang_toolchain_24",
+)
 
 load("@rules_erlang//:hex_pm.bzl", "hex_pm_erlang_app")
 
