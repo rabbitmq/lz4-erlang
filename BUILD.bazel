@@ -1,7 +1,7 @@
 load("@rules_erlang//:erlang_app.bzl", "erlang_app", "test_erlang_app")
 load("@rules_erlang//:xref.bzl", "xref")
-load("@rules_erlang//:dialyze.bzl", "DEFAULT_PLT_APPS", "dialyze", "plt")
-load("@rules_erlang//:ct_sharded.bzl", "assert_suites", "ct_suite")
+load("@rules_erlang//:dialyze.bzl", "dialyze", "plt")
+load("@rules_erlang//:ct.bzl", "assert_suites", "ct_suite")
 
 APP_NAME = "lz4"
 
@@ -19,13 +19,15 @@ cc_binary(
         "c_src/**/*.c",
         "c_src/**/*.h",
     ]) + [
+        "@rules_erlang//tools:erlang_headers",
         "@lz4_src//:lib/lz4.h",
         "@lz4_src//:lib/lz4frame.h",
-        "@lz4_src//:lib/liblz4.a",
+        "@lz4_src//:static_library_linux",
         "@nif_helpers//:nif_helpers.h",
         "@nif_helpers//:nif_helpers.c",
     ],
     copts = [
+        "-I $(BINDIR)/external/rules_erlang/tools/erlang_headers",
         "-I external/lz4_src/lib",
         "-I external/nif_helpers",
         "-fPIC",
@@ -40,8 +42,8 @@ cc_binary(
     ],
     linkshared = True,
     target_compatible_with = [
-        "@platforms//os:linux",
-        "@platforms//cpu:x86_64",
+        "@bazel_tools//platforms:x86_64",
+        "@bazel_tools//platforms:linux",
     ],
 )
 
@@ -68,10 +70,7 @@ test_erlang_app(
     deps = DEPS,
 )
 
-xref(
-    size = "small",
-    tags = ["xref"],
-)
+xref()
 
 plt(
     name = "base_plt",
@@ -80,7 +79,6 @@ plt(
 dialyze(
     size = "small",
     plt = ":base_plt",
-    tags = ["dialyze"],
 )
 
 genrule(
