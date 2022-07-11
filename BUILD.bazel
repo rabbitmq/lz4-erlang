@@ -1,5 +1,5 @@
 load("@rules_erlang//:erlang_app.bzl", "erlang_app", "test_erlang_app")
-load("@rules_erlang//:xref.bzl", "xref")
+load("@rules_erlang//:xref2.bzl", "xref")
 load("@rules_erlang//:dialyze.bzl", "dialyze", "plt")
 load("@rules_erlang//:ct.bzl", "assert_suites", "ct_suite")
 
@@ -27,7 +27,7 @@ cc_binary(
         "@nif_helpers//:nif_helpers.c",
     ],
     copts = [
-        "-I $(BINDIR)/external/rules_erlang/tools/erlang_headers",
+        "-I $(BINDIR)/external/rules_erlang.3.2.0/tools/erlang_headers",
         "-I external/lz4_src/lib",
         "-I external/nif_helpers",
         "-fPIC",
