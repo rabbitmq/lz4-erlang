@@ -1,4 +1,0 @@
-exports_files([
-    "nif_helpers.h",
-    "nif_helpers.c",
-])

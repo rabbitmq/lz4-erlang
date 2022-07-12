@@ -11,10 +11,52 @@ load(
     "maybe",
 )
 
+LZ4_SRC_BUILD_FILE_CONTENT = """load(
+    "@rules_erlang//:generlang.bzl",
+    "generlang",
+)
+
+exports_files([
+    "lib/lz4.h",
+    "lib/lz4frame.h",
+])
+
+generlang(
+    name = "static_library_linux",
+    srcs = glob(
+        [
+            "lib/**/*",
+            "Makefile.inc",
+        ],
+        exclude = ["lib/liblz4.a"],
+    ),
+    outs = [
+        "lib/liblz4.a",
+    ],
+    cmd = "make -C external/.external_deps.lz4_src/lib && cp external/.external_deps.lz4_src/lib/liblz4.a $@",
+    exec_compatible_with = [
+        "@bazel_tools//platforms:x86_64",
+        "@bazel_tools//platforms:linux",
+        "@bazel_tools//tools/cpp:clang",
+    ],
+    target_compatible_with = [
+        "@bazel_tools//platforms:x86_64",
+        "@bazel_tools//platforms:linux",
+    ],
+    visibility = ["//visibility:public"],
+)
+"""
+
+NIF_HELPERS_BUILD_FILE_CONTENT = """exports_files([
+    "nif_helpers.h",
+    "nif_helpers.c",
+])
+"""
+
 def _external_deps(ctx):
     new_git_repository(
         name = "lz4_src",
-        build_file = "//:BUILD.lz4_src",
+        build_file_content = LZ4_SRC_BUILD_FILE_CONTENT,
         remote = "https://github.com/lz4/lz4",
         tag = "v1.9.2",
     )
@@ -22,7 +64,7 @@ def _external_deps(ctx):
     maybe(
         repo_rule = new_git_repository,
         name = "nif_helpers",
-        build_file = "//:BUILD.nif_helpers",
+        build_file_content = NIF_HELPERS_BUILD_FILE_CONTENT,
         commit = "4af25bf765536496ed2b10e22eb4e6e3304b9aee",
         remote = "https://github.com/ninenines/nif_helpers",
     )
