@@ -28,8 +28,8 @@ cc_binary(
     ],
     copts = [
         "-I $(BINDIR)/external/rules_erlang.3.2.0/tools/erlang_headers",
-        "-I external/lz4_src/lib",
-        "-I external/nif_helpers",
+        "-I external/.external_deps.lz4_src/lib",
+        "-I external/.external_deps.nif_helpers",
         "-fPIC",
         # "-Wno-implicit-function-declaration",
         # "-Wno-unused-command-line-argument",

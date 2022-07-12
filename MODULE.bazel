@@ -1,6 +1,22 @@
 module(
     name = "lz4",
     version = "1.9.2.3",
+    toolchains_to_register = [
+        "//toolchains:erlang_toolchain_external",
+        "//toolchains:erlang_toolchain_24",
+    ],
+)
+
+external_deps = use_extension(
+    ":extensions.bzl",
+    "external_deps",
+)
+
+use_repo(
+    external_deps,
+    "lz4_src",
+    "nif_helpers",
+    "pdf_reference",
 )
 
 bazel_dep(
