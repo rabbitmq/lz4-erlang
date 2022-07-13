@@ -3,6 +3,7 @@ load("@rules_erlang//:xref2.bzl", "xref")
 load("@rules_erlang//:dialyze.bzl", "dialyze", "plt")
 load("@rules_erlang//:ct.bzl", "assert_suites", "ct_suite")
 load("@rules_erlang//tools:erlang_headers.bzl", "DEFAULT_FILENAMES")
+load(":util.bzl", "common_root_as_var")
 
 APP_NAME = "lz4"
 
@@ -89,6 +90,13 @@ cc_library(
     ],
 )
 
+common_root_as_var(
+    name = "lz4_headers_root",
+    srcs = [
+        ":liblz4_files",
+    ],
+)
+
 cc_binary(
     name = "lz4_nif_linux",
     srcs = glob([
@@ -96,7 +104,7 @@ cc_binary(
         "c_src/**/*.h",
     ]),
     copts = [
-        "-I $(BINDIR)",
+        "-I $(LZ4_HEADERS_ROOT)",
         "-fPIC",
         # "-Wno-implicit-function-declaration",
         # "-Wno-unused-command-line-argument",
@@ -111,6 +119,9 @@ cc_binary(
     target_compatible_with = [
         "@bazel_tools//platforms:x86_64",
         "@bazel_tools//platforms:linux",
+    ],
+    toolchains = [
+        ":lz4_headers_root",
     ],
     deps = [
         ":erlang_headers",
