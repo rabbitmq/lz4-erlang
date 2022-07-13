@@ -2,7 +2,6 @@ load("@rules_erlang//:erlang_app.bzl", "erlang_app", "test_erlang_app")
 load("@rules_erlang//:xref2.bzl", "xref")
 load("@rules_erlang//:dialyze.bzl", "dialyze", "plt")
 load("@rules_erlang//:ct.bzl", "assert_suites", "ct_suite")
-load("@rules_erlang//tools:erlang_headers.bzl", "DEFAULT_FILENAMES")
 load(":util.bzl", "common_root_as_var")
 
 APP_NAME = "lz4"
@@ -15,28 +14,11 @@ DEPS = [
     "@host_triple//:erlang_app",
 ]
 
-# NOTE: A combination of genrule and cc_import is used to copy headers
-#       such that they can be included at a known relative path when
-#       building :lz4_nif_linux.
-
-# places files in $(BINDIR) for inclusion at a known path below
-genrule(
-    name = "erlang_headers_files",
-    srcs = [
-        "@rules_erlang//tools:erlang_headers",
-    ],
-    outs = DEFAULT_FILENAMES,
-    cmd = "cp $(SRCS) $(RULEDIR)",
-)
-
-cc_import(
-    name = "erlang_headers",
-    hdrs = [
-        ":erlang_headers_files",
-    ],
-)
-
-# places files in $(BINDIR) for inclusion at a known path below
+# NOTE: lz4 headers are referenced with <> paths in c_src, so they
+#       need to be supplied in the deps to :lz4_nif_linux. This
+#       means cc_import must be used, and because cc_import does not
+#       appear to relative-ize any paths, we use genrule to place
+#       the files appropriately
 genrule(
     name = "liblz4_files",
     srcs = [
@@ -61,37 +43,22 @@ cc_import(
     static_library = ":liblz4.a",
 )
 
-# places files in $(BINDIR) for inclusion at a known path below
-genrule(
-    name = "nif_helpers_files",
+common_root_as_var(
+    name = "erlang_headers_dir",
     srcs = [
-        "@nif_helpers//:nif_helpers.h",
-        "@nif_helpers//:nif_helpers.c",
-    ],
-    outs = [
-        "nif_helpers.h",
-        "nif_helpers.c",
-    ],
-    cmd = "cp $(SRCS) $(RULEDIR)",
-)
-
-cc_library(
-    name = "nif_helpers",
-    srcs = [
-        "nif_helpers.c",
-        "nif_helpers.h",
         "@rules_erlang//tools:erlang_headers",
-    ],
-    hdrs = [
-        "nif_helpers.h",
-    ],
-    deps = [
-        ":erlang_headers",
     ],
 )
 
 common_root_as_var(
-    name = "lz4_headers_root",
+    name = "nif_helpers_dir",
+    srcs = [
+        "@nif_helpers//:nif_helpers.h",
+    ],
+)
+
+common_root_as_var(
+    name = "lz4_headers_dir",
     srcs = [
         ":liblz4_files",
     ],
@@ -102,9 +69,15 @@ cc_binary(
     srcs = glob([
         "c_src/**/*.c",
         "c_src/**/*.h",
-    ]),
+    ]) + [
+        "@rules_erlang//tools:erlang_headers",
+        "@nif_helpers//:nif_helpers.h",
+        "@nif_helpers//:nif_helpers.c",
+    ],
     copts = [
-        "-I $(LZ4_HEADERS_ROOT)",
+        "-I $(ERLANG_HEADERS_DIR)",
+        "-I $(NIF_HELPERS_DIR)",
+        "-I $(LZ4_HEADERS_DIR)",
         "-fPIC",
         # "-Wno-implicit-function-declaration",
         # "-Wno-unused-command-line-argument",
@@ -121,12 +94,12 @@ cc_binary(
         "@bazel_tools//platforms:linux",
     ],
     toolchains = [
-        ":lz4_headers_root",
+        ":erlang_headers_dir",
+        ":nif_helpers_dir",
+        ":lz4_headers_dir",
     ],
     deps = [
-        ":erlang_headers",
         ":liblz4",
-        ":nif_helpers",
     ],
 )
 
