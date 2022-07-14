@@ -2,6 +2,7 @@ load("@rules_erlang//:erlang_app.bzl", "erlang_app", "test_erlang_app")
 load("@rules_erlang//:xref2.bzl", "xref")
 load("@rules_erlang//:dialyze.bzl", "dialyze", "plt")
 load("@rules_erlang//:ct.bzl", "assert_suites", "ct_suite")
+load(":util.bzl", "common_root_as_var")
 
 APP_NAME = "lz4"
 
@@ -13,6 +14,56 @@ DEPS = [
     "@host_triple//:erlang_app",
 ]
 
+# NOTE: lz4 headers are referenced with <> paths in c_src, so they
+#       need to be supplied in the deps to :lz4_nif_linux. This
+#       means cc_import must be used, and because cc_import does not
+#       appear to relative-ize any paths, we use genrule to place
+#       the files appropriately
+genrule(
+    name = "liblz4_files",
+    srcs = [
+        "@lz4_src//:lib/lz4.h",
+        "@lz4_src//:lib/lz4frame.h",
+        "@lz4_src//:static_library_linux",
+    ],
+    outs = [
+        "lz4.h",
+        "lz4frame.h",
+        "liblz4.a",
+    ],
+    cmd = "cp $(SRCS) $(RULEDIR)",
+)
+
+cc_import(
+    name = "liblz4",
+    hdrs = [
+        ":lz4.h",
+        ":lz4frame.h",
+    ],
+    static_library = ":liblz4.a",
+)
+
+common_root_as_var(
+    name = "erlang_headers_dir",
+    srcs = [
+        "@rules_erlang//tools:erlang_headers",
+    ],
+)
+
+common_root_as_var(
+    name = "nif_helpers_dir",
+    srcs = [
+        "@nif_helpers//:nif_helpers.h",
+    ],
+)
+
+common_root_as_var(
+    name = "lz4_headers_dir",
+    srcs = [
+        ":liblz4_files",
+    ],
+)
+
 cc_binary(
     name = "lz4_nif_linux",
     srcs = glob([
@@ -20,16 +71,13 @@ cc_binary(
         "c_src/**/*.h",
     ]) + [
         "@rules_erlang//tools:erlang_headers",
-        "@lz4_src//:lib/lz4.h",
-        "@lz4_src//:lib/lz4frame.h",
-        "@lz4_src//:static_library_linux",
         "@nif_helpers//:nif_helpers.h",
         "@nif_helpers//:nif_helpers.c",
     ],
     copts = [
-        "-I $(BINDIR)/external/rules_erlang.3.2.0/tools/erlang_headers",
-        "-I external/.external_deps.lz4_src/lib",
-        "-I external/.external_deps.nif_helpers",
+        "-I $(ERLANG_HEADERS_DIR)",
+        "-I $(NIF_HELPERS_DIR)",
+        "-I $(LZ4_HEADERS_DIR)",
         "-fPIC",
         # "-Wno-implicit-function-declaration",
         # "-Wno-unused-command-line-argument",
@@ -44,6 +92,14 @@ cc_binary(
     target_compatible_with = [
         "@bazel_tools//platforms:x86_64",
         "@bazel_tools//platforms:linux",
+    ],
+    toolchains = [
+        ":erlang_headers_dir",
+        ":nif_helpers_dir",
+        ":lz4_headers_dir",
+    ],
+    deps = [
+        ":liblz4",
     ],
 )
 
