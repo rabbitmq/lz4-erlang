@@ -1,10 +1,6 @@
 module(
     name = "lz4",
     version = "1.9.2.3",
-    toolchains_to_register = [
-        "//toolchains:erlang_toolchain_external",
-        "//toolchains:erlang_toolchain_24",
-    ],
 )
 
 external_deps = use_extension(

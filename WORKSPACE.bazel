@@ -30,3 +30,8 @@ git_repository(
     branch = "linux-rbe",
     remote = "https://github.com/rabbitmq/rbe-erlang-platform.git",
 )
+
+register_toolchains(
+    "//toolchains:erlang_toolchain_external",
+    "//toolchains:erlang_toolchain_24",
+)
