@@ -4,6 +4,13 @@ build --registry=https://raw.githubusercontent.com/rabbitmq/bazel-central-regist
 build --incompatible_strict_action_env
 build --local_test_jobs=1
 
+build --flag_alias=erlang_home=@rules_erlang//:erlang_home
+build --flag_alias=erlang_version=@rules_erlang//:erlang_version
+
+build --extra_toolchains="@erlang_config//external:toolchain"
+build --extra_toolchains="@erlang_config//24:toolchain"
+build --extra_toolchains="@erlang_config//25:toolchain"
+
 build:buildbuddy --bes_results_url=https://app.buildbuddy.io/invocation/
 build:buildbuddy --bes_backend=grpcs://remote.buildbuddy.io
 build:buildbuddy --remote_cache=grpcs://remote.buildbuddy.io
@@ -22,9 +29,11 @@ build:rbe --jobs=50
 build:rbe --crosstool_top=@rbe//cc:toolchain
 build:rbe --extra_toolchains=@rbe//config:cc-toolchain
 
-build:rbe --host_platform=@rbe//config:platform
-build:rbe --platforms=//platforms:erlang_24_platform
-build:rbe --extra_execution_platforms=//platforms:erlang_24_platform
+build:rbe --host_platform=//platforms:erlang_internal_platform
+build:rbe --platforms=//platforms:erlang_linux_24_platform
+
+build:rbe --host_cpu=k8
+build:rbe --cpu=k8
 
 # Try importing a user specific .bazelrc
 # You can create your own by copying and editing the template-user.bazelrc template:
