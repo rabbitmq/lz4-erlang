@@ -18,3 +18,5 @@ test/lz4f_SUITE_data/
 
 /user.bazelrc
 /bazel-*
+
+/.vscode/
