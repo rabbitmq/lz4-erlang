@@ -28,9 +28,10 @@ erlang_config_extension = use_extension(
 
 erlang_config_extension.internal_erlang_from_github_release(
     name = "24",
-    sha256 = "86dddc0de486acc320ed7557f12033af0b5045205290ee4926aa931b3d8b3ab2",
-    version = "24.3.4.4",
+    sha256 = "8444ff9abe23aea268adbb95463561fc222c965052d35d7c950b17be01c3ad82",
+    version = "24.3.4.6",
 )
+
 erlang_config_extension.internal_erlang_from_github_release(
     name = "25",
     sha256 = "8fc707f92a124b2aeb0f65dcf9ac8e27b2a305e7bcc4cc1b2fdf770eec0165bf",
@@ -54,8 +55,8 @@ erlang_package.hex_package(
 )
 
 erlang_package.git_package(
-    repository = "extend/ct_helper",
     branch = "master",
+    repository = "extend/ct_helper",
 )
 
 use_repo(
