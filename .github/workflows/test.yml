@@ -23,12 +23,12 @@ jobs:
         key: repo-cache
     - name: CONFIGURE BAZEL
       run: |
-        echo "${{ secrets.BUILDBUDDY_CERT }}" > buildbuddy-cert.pem
-        echo "${{ secrets.BUILDBUDDY_KEY }}" > buildbuddy-key.pem
+        if [ -n "${{ secrets.BUILDBUDDY_API_KEY }}" ]; then
         cat << EOF >> user.bazelrc
-          build:buildbuddy --tls_client_certificate=buildbuddy-cert.pem
-          build:buildbuddy --tls_client_key=buildbuddy-key.pem
-
+          build:buildbuddy --remote_header=x-buildbuddy-api-key=${{ secrets.BUILDBUDDY_API_KEY }}
+        EOF
+        fi
+        cat << EOF >> user.bazelrc
           build:buildbuddy --build_metadata=ROLE=CI
           build:buildbuddy --build_metadata=VISIBILITY=PUBLIC
           build:buildbuddy --repository_cache=/home/runner/repo-cache/
