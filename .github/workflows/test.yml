@@ -7,6 +7,12 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        bazel_otp_name:
+        - "24"
+        - "25"
     steps:
     - name: CHECKOUT
       uses: actions/checkout@v2
@@ -34,5 +40,5 @@ jobs:
     - name: TEST
       run: |
         bazelisk test //... \
-          --config=rbe \
+          --config=rbe-${{ matrix.bazel_otp_name }} \
           --verbose_failures
