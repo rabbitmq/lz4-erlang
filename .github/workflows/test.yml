@@ -17,7 +17,7 @@ jobs:
     - name: CHECKOUT
       uses: actions/checkout@v3
     - name: MOUNT BAZEL CACHE
-      uses: actions/cache@v3.2.1
+      uses: actions/cache@v3.2.2
       with:
         path: "/home/runner/repo-cache/"
         key: repo-cache
