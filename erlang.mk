@@ -6266,10 +6266,11 @@ ifeq ($(PLATFORM),msys2)
 	CFLAGS ?= -O3 -std=c99 -finline-functions -Wall -Wmissing-prototypes
 	CXXFLAGS ?= -O3 -finline-functions -Wall
 else ifeq ($(PLATFORM),darwin)
+	SYS_ARCH := $(shell uname -m)
 	CC ?= cc
-	CFLAGS ?= -O3 -std=c99 -arch x86_64 -Wall -Wmissing-prototypes
-	CXXFLAGS ?= -O3 -arch x86_64 -Wall
-	LDFLAGS ?= -arch x86_64 -flat_namespace -undefined suppress
+	CFLAGS ?= -O3 -std=c99 -arch $(SYS_ARCH) -Wall -Wmissing-prototypes
+	CXXFLAGS ?= -O3 -arch $(SYS_ARCH) -Wall
+	LDFLAGS ?= -arch $(SYS_ARCH) -flat_namespace -undefined suppress
 else ifeq ($(PLATFORM),freebsd)
 	CC ?= cc
 	CFLAGS ?= -O3 -std=c99 -finline-functions -Wall -Wmissing-prototypes
