@@ -3,6 +3,11 @@ module(
     version = "1.9.2.3",
 )
 
+bazel_dep(
+    name = "platforms",
+    version = "0.0.5",
+)
+
 external_deps = use_extension(
     ":extensions.bzl",
     "external_deps",
@@ -17,7 +22,7 @@ use_repo(
 
 bazel_dep(
     name = "rules_erlang",
-    version = "3.8.1",
+    version = "3.8.5",
 )
 
 erlang_config_extension = use_extension(
