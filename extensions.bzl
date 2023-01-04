@@ -35,13 +35,13 @@ generlang(
     ],
     cmd = "LIB_DIR=$(dirname $(location lib/Makefile)); make -C $LIB_DIR && cp $LIB_DIR/liblz4.a $@",
     exec_compatible_with = [
-        "@bazel_tools//platforms:x86_64",
-        "@bazel_tools//platforms:linux",
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
         "@bazel_tools//tools/cpp:clang",
     ],
     target_compatible_with = [
-        "@bazel_tools//platforms:x86_64",
-        "@bazel_tools//platforms:linux",
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
     ],
     visibility = ["//visibility:public"],
 )
@@ -53,7 +53,7 @@ NIF_HELPERS_BUILD_FILE_CONTENT = """exports_files([
 ])
 """
 
-def _external_deps(ctx):
+def _external_deps(_ctx):
     new_git_repository(
         name = "lz4_src",
         build_file_content = LZ4_SRC_BUILD_FILE_CONTENT,
@@ -72,7 +72,7 @@ def _external_deps(ctx):
     maybe(
         repo_rule = http_file,
         name = "pdf_reference",
-        urls = ["https://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf"],
+        urls = ["https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf"],
     )
 
 external_deps = module_extension(
