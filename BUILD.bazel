@@ -24,7 +24,7 @@ genrule(
     srcs = [
         "@lz4_src//:lib/lz4.h",
         "@lz4_src//:lib/lz4frame.h",
-        "@lz4_src//:static_library_linux",
+        "@lz4_src//:static_library",
     ],
     outs = [
         "lz4.h",
@@ -65,7 +65,7 @@ common_root_as_var(
 )
 
 cc_binary(
-    name = "lz4_nif_linux",
+    name = "lz4_nif",
     srcs = glob([
         "c_src/**/*.c",
         "c_src/**/*.h",
@@ -79,20 +79,11 @@ cc_binary(
         "-I $(NIF_HELPERS_DIR)",
         "-I $(LZ4_HEADERS_DIR)",
         "-fPIC",
-        # "-Wno-implicit-function-declaration",
-        # "-Wno-unused-command-line-argument",
-        # "-v",
-    ],
-    exec_compatible_with = [
-        "@platforms//os:linux",
-        "@platforms//cpu:x86_64",
-        "@bazel_tools//tools/cpp:clang",
-    ],
+    ] + select({
+        "@platforms//os:macos": ["-Wno-implicit-function-declaration"],
+        "//conditions:default": [],
+    }),
     linkshared = True,
-    target_compatible_with = [
-        "@platforms//os:linux",
-        "@platforms//cpu:x86_64",
-    ],
     toolchains = [
         ":erlang_headers_dir",
         ":nif_helpers_dir",
@@ -105,7 +96,7 @@ cc_binary(
 
 genrule(
     name = "lz4_nif_so",
-    srcs = [":lz4_nif_linux"],
+    srcs = [":lz4_nif"],
     outs = ["priv/lz4_nif.so"],
     cmd = "cp $< $@",
 )

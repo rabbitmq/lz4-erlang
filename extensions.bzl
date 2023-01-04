@@ -22,7 +22,7 @@ exports_files([
 ])
 
 generlang(
-    name = "static_library_linux",
+    name = "static_library",
     srcs = glob(
         [
             "lib/**/*",
@@ -34,15 +34,6 @@ generlang(
         "lib/liblz4.a",
     ],
     cmd = "LIB_DIR=$(dirname $(location lib/Makefile)); make -C $LIB_DIR && cp $LIB_DIR/liblz4.a $@",
-    exec_compatible_with = [
-        "@platforms//os:linux",
-        "@platforms//cpu:x86_64",
-        "@bazel_tools//tools/cpp:clang",
-    ],
-    target_compatible_with = [
-        "@platforms//os:linux",
-        "@platforms//cpu:x86_64",
-    ],
     visibility = ["//visibility:public"],
 )
 """
