@@ -33,7 +33,7 @@ generlang(
     outs = [
         "lib/liblz4.a",
     ],
-    cmd = "LIB_DIR=$(dirname $(location lib/Makefile)); make -C $LIB_DIR && cp $LIB_DIR/liblz4.a $@",
+    cmd = "LIB_DIR=$(dirname $(location lib/Makefile)); make -C $LIB_DIR liblz4.a MOREFLAGS=-fPIC && cp $LIB_DIR/liblz4.a $@",
     visibility = ["//visibility:public"],
 )
 """
