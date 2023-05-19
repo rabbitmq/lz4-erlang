@@ -1,5 +1,5 @@
 module(
-    name = "lz4",
+    name = "lz4-erlang",
     version = "1.9.2.4",
 )
 
