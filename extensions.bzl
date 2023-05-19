@@ -60,12 +60,17 @@ def _external_deps(_ctx):
         remote = "https://github.com/ninenines/nif_helpers",
     )
 
+external_deps = module_extension(
+    implementation = _external_deps,
+)
+
+def _external_test_deps(_ctx):
     maybe(
         repo_rule = http_file,
         name = "pdf_reference",
         urls = ["https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf"],
     )
 
-external_deps = module_extension(
-    implementation = _external_deps,
+external_test_deps = module_extension(
+    implementation = _external_test_deps,
 )

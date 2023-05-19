@@ -17,6 +17,16 @@ use_repo(
     external_deps,
     "lz4_src",
     "nif_helpers",
+)
+
+external_test_deps = use_extension(
+    ":extensions.bzl",
+    "external_test_deps",
+    dev_dependency = True,
+)
+
+use_repo(
+    external_test_deps,
     "pdf_reference",
 )
 
