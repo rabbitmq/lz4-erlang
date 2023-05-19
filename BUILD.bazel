@@ -8,7 +8,7 @@ APP_NAME = "lz4"
 
 APP_DESCRIPTION = "An LZ4 compression library that wraps an NIF"
 
-APP_VERSION = "1.9.2.3"
+APP_VERSION = module_version()
 
 DEPS = [
     "@host_triple//:erlang_app",
