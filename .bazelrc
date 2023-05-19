@@ -7,10 +7,7 @@ build --local_test_jobs=1
 build --flag_alias=erlang_home=@rules_erlang//:erlang_home
 build --flag_alias=erlang_version=@rules_erlang//:erlang_version
 
-build --extra_toolchains="@erlang_config//24:toolchain"
-build --extra_toolchains="@erlang_config//24:toolchain2"
-build --extra_toolchains="@erlang_config//25:toolchain"
-build --extra_toolchains="@erlang_config//25:toolchain2"
+build --extra_toolchains="@erlang_config//..."
 
 build:buildbuddy --bes_results_url=https://app.buildbuddy.io/invocation/
 build:buildbuddy --bes_backend=grpcs://remote.buildbuddy.io
@@ -45,6 +42,9 @@ build:rbe-24 --platforms=//platforms:erlang_linux_24_platform
 
 build:rbe-25 --config=rbe
 build:rbe-25 --platforms=//platforms:erlang_linux_25_platform
+
+build:rbe-26 --config=rbe
+build:rbe-26 --platforms=//platforms:erlang_linux_26_platform
 
 # Try importing a user specific .bazelrc
 # You can create your own by copying and editing the template-user.bazelrc template:

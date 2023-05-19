@@ -1,7 +1,7 @@
 load("@rules_erlang//:erlang_app.bzl", "erlang_app", "test_erlang_app")
 load("@rules_erlang//:xref2.bzl", "xref")
 load("@rules_erlang//:dialyze.bzl", "dialyze", "plt")
-load("@rules_erlang//:ct.bzl", "assert_suites", "ct_suite")
+load("@rules_erlang//:ct.bzl", "assert_suites2", "ct_suite")
 load(":util.bzl", "common_root_as_var")
 
 APP_NAME = "lz4"
@@ -120,12 +120,20 @@ test_erlang_app(
 xref()
 
 plt(
-    name = "base_plt",
+    name = "deps_plt",
+    apps = [
+        "erts",
+        "kernel",
+        "stdlib",
+        "compiler",
+        "crypto",
+    ],
+    for_target = ":erlang_app",
 )
 
 dialyze(
     size = "small",
-    plt = ":base_plt",
+    plt = ":deps_plt",
 )
 
 genrule(
@@ -135,14 +143,14 @@ genrule(
     cmd = "cp $< $@",
 )
 
-assert_suites([
-    ct_suite(
-        name = "lz4f_SUITE",
-        data = [
-            "test/lz4f_SUITE_data/pdf_reference_1-7.pdf",
-        ],
-        runtime_deps = [
-            "@ct_helper//:erlang_app",
-        ],
-    ),
-])
+ct_suite(
+    name = "lz4f_SUITE",
+    data = [
+        "test/lz4f_SUITE_data/pdf_reference_1-7.pdf",
+    ],
+    runtime_deps = [
+        "@ct_helper//:erlang_app",
+    ],
+)
+
+assert_suites2()
