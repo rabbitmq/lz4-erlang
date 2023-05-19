@@ -13,6 +13,7 @@ jobs:
         bazel_otp_name:
         - "24"
         - "25"
+        - "26"
     steps:
     - name: CHECKOUT
       uses: actions/checkout@v3
