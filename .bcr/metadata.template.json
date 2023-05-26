@@ -1,0 +1,15 @@
+{
+  "homepage": "https://github.com/rabbitmq/lz4-erlang",
+  "maintainers": [
+    {
+      "email": "kuryloskip@vmware.com",
+      "github": "pjk25",
+      "name": "Rin Kuryloski"
+    }
+  ],
+  "repository": [
+    "github:rabbitmq/lz4-erlang"
+  ],
+  "versions": [],
+  "yanked_versions": {}
+}
