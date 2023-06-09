@@ -68,7 +68,7 @@ def _external_test_deps(_ctx):
     maybe(
         repo_rule = http_file,
         name = "pdf_reference",
-        urls = ["https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf"],
+        urls = ["https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.0.pdf"],
     )
 
 external_test_deps = module_extension(
