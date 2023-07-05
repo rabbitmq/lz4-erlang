@@ -6,7 +6,7 @@ load(":util.bzl", "common_root_as_var")
 
 APP_NAME = "lz4"
 
-APP_DESCRIPTION = "An LZ4 compression library that wraps an NIF"
+APP_DESCRIPTION = "An LZ4 compression library that wraps a NIF"
 
 APP_VERSION = module_version()
 

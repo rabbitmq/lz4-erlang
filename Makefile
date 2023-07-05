@@ -1,5 +1,5 @@
 PROJECT = lz4
-PROJECT_DESCRIPTION = An LZ4 compression library that wraps an NIF
+PROJECT_DESCRIPTION = An LZ4 compression library that wraps a NIF
 # The version of based on the version of the lz4 library, plus a "revision".
 PROJECT_VERSION = 1.9.2.5
 
