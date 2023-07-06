@@ -21,13 +21,17 @@ build:buildbuddy --noslim_profile
 build:buildbuddy --experimental_profile_include_target_label
 build:buildbuddy --experimental_profile_include_primary_output
 
-build:rbe --config=buildbuddy
+build:buildbuddy --@rules_erlang//:ct_logdir=
 
-build:rbe --remote_executor=grpcs://remote.buildbuddy.io
+build:remote --config=buildbuddy
 
-build:rbe --spawn_strategy=remote
-build:rbe --test_strategy=""
-build:rbe --jobs=50
+build:remote --remote_executor=grpcs://remote.buildbuddy.io
+
+build:remote --spawn_strategy=remote
+build:remote --test_strategy=""
+build:remote --jobs=50
+
+build:rbe --config=remote
 
 build:rbe --crosstool_top=@rbe//cc:toolchain
 build:rbe --extra_toolchains=@rbe//config:cc-toolchain
@@ -45,6 +49,19 @@ build:rbe-25 --platforms=//platforms:erlang_linux_25_platform
 
 build:rbe-26 --config=rbe
 build:rbe-26 --platforms=//platforms:erlang_linux_26_platform
+
+# cross compile arm
+build:rbe-arm64 --config=remote
+
+build:rbe-arm64 --crosstool_top=//toolchains:x_suite
+build:rbe-arm64 --host_crosstool_top=@rbe//cc:toolchain
+# build:rbe-arm64 --extra_toolchains=@rbe//config:cc-toolchain
+
+build:rbe-arm64 --host_platform=//platforms:erlang_internal_platform
+build:rbe-arm64 --platforms=//platforms:erlang_linux_26_platform
+
+build:rbe-arm64 --host_cpu=k8
+build:rbe-arm64 --cpu=aarch64
 
 # Try importing a user specific .bazelrc
 # You can create your own by copying and editing the template-user.bazelrc template:

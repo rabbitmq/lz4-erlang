@@ -11,17 +11,13 @@ load(
     "maybe",
 )
 
-LZ4_SRC_BUILD_FILE_CONTENT = """load(
-    "@rules_erlang//:generlang.bzl",
-    "generlang",
-)
-
+LZ4_SRC_BUILD_FILE_CONTENT = """\
 exports_files([
     "lib/lz4.h",
     "lib/lz4frame.h",
 ])
 
-generlang(
+genrule(
     name = "static_library",
     srcs = glob(
         [
@@ -33,7 +29,23 @@ generlang(
     outs = [
         "lib/liblz4.a",
     ],
-    cmd = "LIB_DIR=$(dirname $(location lib/Makefile)); make -C $LIB_DIR liblz4.a MOREFLAGS=-fPIC && cp $LIB_DIR/liblz4.a $@",
+    cmd = "LIB_DIR=$$(dirname $(location lib/Makefile)); make -C $$LIB_DIR liblz4.a MOREFLAGS=-fPIC && cp $$LIB_DIR/liblz4.a $@",
+    visibility = ["//visibility:public"],
+)
+
+genrule(
+    name = "static_library_arm64",
+    srcs = glob(
+        [
+            "lib/**/*",
+            "Makefile.inc",
+        ],
+        exclude = ["lib/liblz4.a"],
+    ),
+    outs = [
+        "arm64/liblz4.a",
+    ],
+    cmd = 'LIB_DIR=$$(dirname $(location lib/Makefile)); CC=aarch64-linux-gnu-gcc CFLAGS="-Werror -O0" make -C $$LIB_DIR liblz4.a MOREFLAGS=-fPIC && cp $$LIB_DIR/liblz4.a $@',
     visibility = ["//visibility:public"],
 )
 """

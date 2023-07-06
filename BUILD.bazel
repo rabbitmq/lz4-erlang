@@ -24,8 +24,10 @@ genrule(
     srcs = [
         "@lz4_src//:lib/lz4.h",
         "@lz4_src//:lib/lz4frame.h",
-        "@lz4_src//:static_library",
-    ],
+    ] + select({
+        "//toolchains:cross_compile_arm64": ["@lz4_src//:static_library_arm64"],
+        "//conditions:default": ["@lz4_src//:static_library"],
+    }),
     outs = [
         "lz4.h",
         "lz4frame.h",
@@ -70,9 +72,9 @@ cc_binary(
         "c_src/**/*.c",
         "c_src/**/*.h",
     ]) + [
-        "@rules_erlang//tools:erlang_headers",
-        "@nif_helpers//:nif_helpers.h",
         "@nif_helpers//:nif_helpers.c",
+        "@nif_helpers//:nif_helpers.h",
+        "@rules_erlang//tools:erlang_headers",
     ],
     copts = [
         "-I $(ERLANG_HEADERS_DIR)",
