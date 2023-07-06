@@ -14,6 +14,7 @@ jobs:
         - "24"
         - "25"
         - "26"
+        - "arm64"
     steps:
     - name: CHECKOUT
       uses: actions/checkout@v3
@@ -21,7 +22,9 @@ jobs:
       uses: actions/cache@v3.3.1
       with:
         path: "/home/runner/repo-cache/"
-        key: repo-cache
+        key: ${{ runner.os }}-repo-cache-${{ hashFiles('MODULE.bazel','WORKSPACE.bazel','extensions.bzl') }}
+        restore-keys: |
+          ${{ runner.os }}-repo-cache-
     - name: CONFIGURE BAZEL
       run: |
         if [ -n "${{ secrets.BUILDBUDDY_API_KEY }}" ]; then

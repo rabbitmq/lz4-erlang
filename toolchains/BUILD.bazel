@@ -1,0 +1,38 @@
+load(":cc_toolchain_config.bzl", "cc_toolchain_config")
+
+package(default_visibility = ["//visibility:public"])
+
+config_setting(
+    name = "cross_compile_arm64",
+    values = {
+        "host_cpu": "k8",
+        "cpu": "aarch64",
+    },
+)
+
+cc_toolchain_suite(
+    name = "x_suite",
+    toolchains = {
+        "aarch64": ":aarch64_toolchain",
+    },
+    target_compatible_with = [
+        "@platforms//cpu:aarch64",
+    ],
+)
+
+filegroup(name = "empty")
+
+cc_toolchain(
+    name = "aarch64_toolchain",
+    all_files = ":empty",
+    compiler_files = ":empty",
+    dwp_files = ":empty",
+    linker_files = ":empty",
+    objcopy_files = ":empty",
+    strip_files = ":empty",
+    supports_param_files = 0,
+    toolchain_config = ":aarch64_toolchain_config",
+    toolchain_identifier = "aarch64-toolchain",
+)
+
+cc_toolchain_config(name = "aarch64_toolchain_config")
