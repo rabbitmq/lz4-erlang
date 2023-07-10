@@ -1,6 +1,6 @@
 module(
     name = "lz4-erlang",
-    version = "1.9.2.6",
+    version = "1.9.4.0",
 )
 
 bazel_dep(

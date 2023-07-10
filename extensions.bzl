@@ -61,7 +61,7 @@ def _external_deps(_ctx):
         name = "lz4_src",
         build_file_content = LZ4_SRC_BUILD_FILE_CONTENT,
         remote = "https://github.com/lz4/lz4",
-        tag = "v1.9.2",
+        tag = "v1.9.4",
     )
 
     maybe(
