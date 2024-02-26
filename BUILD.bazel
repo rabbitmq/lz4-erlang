@@ -11,7 +11,7 @@ APP_DESCRIPTION = "An LZ4 compression library that wraps an NIF"
 APP_VERSION = module_version()
 
 DEPS = [
-    "@host_triple//:erlang_app",
+    "@erlang_packages//host_triple",
 ]
 
 # NOTE: lz4 headers are referenced with <> paths in c_src, so they
