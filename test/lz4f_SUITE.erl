@@ -6,6 +6,9 @@
 
 %% ct.
 
+suite() ->
+    [{timetrap, {minutes, 2}}].
+
 all() ->
     [{group, all}].
 

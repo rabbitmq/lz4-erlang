@@ -1,5 +1,5 @@
-build --enable_bzlmod
-# build --registry=https://raw.githubusercontent.com/rabbitmq/bazel-central-registry/dev/
+build --registry=https://bcr.bazel.build/
+build --registry=https://raw.githubusercontent.com/rabbitmq/bazel-central-registry/erlang-packages/
 
 build --incompatible_strict_action_env
 build --local_test_jobs=1
@@ -33,7 +33,6 @@ build:remote --jobs=50
 
 build:rbe --config=remote
 
-build:rbe --crosstool_top=@rbe//cc:toolchain
 build:rbe --extra_toolchains=@rbe//config:cc-toolchain
 
 build:rbe --host_platform=//platforms:erlang_internal_platform
@@ -53,12 +52,12 @@ build:rbe-26 --platforms=//platforms:erlang_linux_26_platform
 # cross compile arm
 build:rbe-arm64 --config=remote
 
-build:rbe-arm64 --crosstool_top=//toolchains:x_suite
-build:rbe-arm64 --host_crosstool_top=@rbe//cc:toolchain
-# build:rbe-arm64 --extra_toolchains=@rbe//config:cc-toolchain
+build:rbe-arm64 --extra_toolchains=@rbe//config:cc-toolchain
+
+build:rbe-arm64 --extra_toolchains=//toolchains:x-cc-toolchain
 
 build:rbe-arm64 --host_platform=//platforms:erlang_internal_platform
-build:rbe-arm64 --platforms=//platforms:erlang_linux_26_platform
+build:rbe-arm64 --platforms=//platforms:erlang_linux_26_arm64_platform
 
 build:rbe-arm64 --host_cpu=k8
 build:rbe-arm64 --cpu=aarch64
