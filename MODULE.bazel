@@ -43,8 +43,8 @@ erlang_config = use_extension(
 
 erlang_config.internal_erlang_from_github_release(
     name = "24",
-    sha256 = "111a00cf3fd512526e35f232fb18e6e95c7a9b1688bb38d7dd8152a82e0ea684",
-    version = "24.3.4.13",
+    sha256 = "aad5d79ab7554b5827298024b722dbbf54bf01b9a5737e633e93e5953fadc4f9",
+    version = "24.3.4.16",
 )
 
 erlang_config.internal_erlang_from_github_release(
