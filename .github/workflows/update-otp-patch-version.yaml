@@ -36,8 +36,8 @@ jobs:
           echo "Failed to determine SHA for ${TAG_NAME}"
           exit 1
         fi
-        echo "::set-output name=VERSION::${VERSION}"
-        echo "::set-output name=SHA::${SHA}"
+        echo "VERSION=$VERSION" | tee -a $GITHUB_OUTPUT
+        echo "SHA=$SHA" | tee -a $GITHUB_OUTPUT
     - name: MODIFY VERSION FILE
       run: |
         sudo npm install --global --silent @bazel/buildozer
