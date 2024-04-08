@@ -33,8 +33,7 @@ platform(
 platform(
     name = "erlang_linux_26_arm64_platform",
     constraint_values = [
-        "@erlang_config//:erlang_26",
         "@platforms//cpu:aarch64",
     ],
-    parents = ["@rbe//config:platform"],
+    parents = [":erlang_linux_26_platform"],
 )
