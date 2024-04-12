@@ -16,12 +16,9 @@ jobs:
       fail-fast: false
       matrix:
         erlang_version:
-        - "24.3"
         - "25.3"
         - "26.0"
         include:
-        - erlang_version: "24.3"
-          name: '24'
         - erlang_version: "25.3"
           name: '25'
         - erlang_version: "26.0"
