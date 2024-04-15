@@ -8,6 +8,11 @@ bazel_dep(
     version = "0.0.7",
 )
 
+bazel_dep(
+    name = "rules_cc",
+    version = "0.0.9",
+)
+
 external_deps = use_extension(
     ":extensions.bzl",
     "external_deps",
