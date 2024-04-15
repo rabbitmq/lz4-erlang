@@ -2,7 +2,6 @@ name: Add to rabbitmq/bazel-central-registry@erlang-packages
 on:
   release:
     types: [published]
-  workflow_dispatch:
 jobs:
   add-module:
     runs-on: ubuntu-latest
