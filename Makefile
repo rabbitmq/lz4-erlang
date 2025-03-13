@@ -8,6 +8,8 @@ dep_lz4_src = git https://github.com/lz4/lz4 v1.9.4
 dep_nif_helpers = git https://github.com/ninenines/nif_helpers 4af25bf765536496ed2b10e22eb4e6e3304b9aee
 DEP_PLUGINS = nif_helpers
 
+NO_AUTOPATCH = lz4_src nif_helpers
+
 DEPS = host_triple
 dep_host_triple = hex 0.1.0
 

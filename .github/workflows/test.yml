@@ -5,112 +5,75 @@ on:
       - main
   pull_request:
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        bazel_otp_name:
-        - "arm64"
-    steps:
-    - name: CHECKOUT
-      uses: actions/checkout@v4
-    - name: MOUNT BAZEL CACHE
-      uses: actions/cache@v4.2.2
-      with:
-        path: "/home/runner/repo-cache/"
-        key: ${{ runner.os }}-repo-cache-${{ hashFiles('MODULE.bazel','WORKSPACE.bazel','extensions.bzl') }}
-        restore-keys: |
-          ${{ runner.os }}-repo-cache-
-    - name: CONFIGURE BAZEL
-      run: |
-        if [ -n "${{ secrets.BUILDBUDDY_API_KEY }}" ]; then
-        cat << EOF >> user.bazelrc
-          build:buildbuddy --remote_header=x-buildbuddy-api-key=${{ secrets.BUILDBUDDY_API_KEY }}
-        EOF
-        fi
-        cat << EOF >> user.bazelrc
-          build:buildbuddy --build_metadata=ROLE=CI
-          build:buildbuddy --build_metadata=VISIBILITY=PUBLIC
-          build:buildbuddy --repository_cache=/home/runner/repo-cache/
-          build:buildbuddy --color=yes
-          build:buildbuddy --disk_cache=
-        EOF
 
-        bazelisk info release
-    - name: TEST
-      run: |
-        bazelisk build //... \
-          --config=rbe-${{ matrix.bazel_otp_name }} \
-          --verbose_failures
   test:
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        bazel_otp_name:
-        - "25"
-        - "26"
+        os:
+        - 'ubuntu-latest'
+        - 'ubuntu-24.04-arm'
+        erlang_version:
+        - '26'
+        - '27'
+    runs-on: ${{ matrix.os }}
     steps:
     - name: CHECKOUT
       uses: actions/checkout@v4
-    - name: MOUNT BAZEL CACHE
-      uses: actions/cache@v4.2.2
-      with:
-        path: "/home/runner/repo-cache/"
-        key: ${{ runner.os }}-repo-cache-${{ hashFiles('MODULE.bazel','WORKSPACE.bazel','extensions.bzl') }}
-        restore-keys: |
-          ${{ runner.os }}-repo-cache-
-    - name: CONFIGURE BAZEL
-      run: |
-        if [ -n "${{ secrets.BUILDBUDDY_API_KEY }}" ]; then
-        cat << EOF >> user.bazelrc
-          build:buildbuddy --remote_header=x-buildbuddy-api-key=${{ secrets.BUILDBUDDY_API_KEY }}
-        EOF
-        fi
-        cat << EOF >> user.bazelrc
-          build:buildbuddy --build_metadata=ROLE=CI
-          build:buildbuddy --build_metadata=VISIBILITY=PUBLIC
-          build:buildbuddy --repository_cache=/home/runner/repo-cache/
-          build:buildbuddy --color=yes
-          build:buildbuddy --disk_cache=
-        EOF
 
-        bazelisk info release
+    - name: SETUP OTP
+      uses: erlef/setup-beam@v1
+      with:
+        otp-version: ${{ matrix.erlang_version }}
+        hexpm-mirrors: |
+          https://builds.hex.pm
+          https://cdn.jsdelivr.net/hex
+
     - name: TEST
-      run: |
-        bazelisk test //... \
-          --config=rbe-${{ matrix.bazel_otp_name }} \
-          --verbose_failures
+      run: make check
 
   test-macos:
     runs-on: macos-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        bazel_otp_name:
-        - "26"
     steps:
     - name: CHECKOUT
       uses: actions/checkout@v4
-    - name: CONFIGURE BAZEL
-      run: |
-        if [ -n "${{ secrets.BUILDBUDDY_API_KEY }}" ]; then
-        cat << EOF >> user.bazelrc
-          build:buildbuddy --remote_header=x-buildbuddy-api-key=${{ secrets.BUILDBUDDY_API_KEY }}
-        EOF
-        fi
-        cat << EOF >> user.bazelrc
-          build:buildbuddy --build_metadata=ROLE=CI
-          build:buildbuddy --build_metadata=VISIBILITY=PUBLIC
-          build:buildbuddy --repository_cache=
-          build:buildbuddy --color=yes
-          build:buildbuddy --disk_cache=
-        EOF
 
-        bazelisk info release
+    - name: SETUP OTP
+      if: runner.os == 'macOS'
+      run: brew install coreutils make erlang
+
     - name: TEST
-      run: |
-        bazelisk test //... \
-          --config=rbe-${{ matrix.bazel_otp_name }} \
-          --verbose_failures
+      run: make check
+
+  test-windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        erlang_version:
+        - '27'
+    runs-on: windows-latest
+    steps:
+    - name: CHECKOUT
+      uses: actions/checkout@v4
+
+    - name: SETUP OTP
+      uses: erlef/setup-beam@v1
+      with:
+        otp-version: ${{ matrix.erlang_version }}
+        hexpm-mirrors: |
+          https://builds.hex.pm
+          https://cdn.jsdelivr.net/hex
+
+    - name: SETUP MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: mingw64
+        update: true
+        install: >-
+          git
+          make
+          mingw-w64-x86_64-gcc
+
+    - name: TEST
+      shell: msys2 {0}
+      run: PATH=$INSTALL_DIR_FOR_OTP/bin:$PATH make check
