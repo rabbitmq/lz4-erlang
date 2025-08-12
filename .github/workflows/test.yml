@@ -19,7 +19,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - name: CHECKOUT
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: SETUP OTP
       uses: erlef/setup-beam@v1
@@ -36,7 +36,7 @@ jobs:
     runs-on: macos-latest
     steps:
     - name: CHECKOUT
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: SETUP OTP
       if: runner.os == 'macOS'
@@ -54,7 +54,7 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: CHECKOUT
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: SETUP OTP
       uses: erlef/setup-beam@v1
